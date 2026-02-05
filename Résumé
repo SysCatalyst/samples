@@ -1,0 +1,28 @@
+Récupération des fonctions de WCR : calcul des agrégats pour l’usage des fonctions « états mail » (Reporting) et « KPI » (dashboard du portail VISION) — mutualisation et répartition des responsabilités
+
+La récupération des fonctions de WCR s’inscrit dans la modernisation globale du SID et permettra d’exploiter les données transactionnelles issues d’ESTREEM, mises à disposition via le socle data.
+
+Note : Certains EDD devront être repris dans le cadre du lot 1 de l’acquisition, prévu en janvier 2027.
+
+ITSVC :
+https://fluence-group.echonet/downl…/attachments/539691501/Accepta%20WCR%20Integration%20and%20data%20platform%20evolution%20draft%20v1.3.pptx?version=1&modificationDate=1739894780000&api=v2
+	•	Caprice : production des états mail à reprendre par le service Reporting
+	•	Découpage en deux composants : front-end et back-end
+	•	Rattachement au portail pour le front-end
+	•	Rattachement au socle data pour le back-end
+	•	50 % des fonctionnalités entreprises sont couvertes ; il reste notamment :
+	•	la fraude,
+	•	les annonces statistiques.
+
+⸻
+
+Calcul des agrégats pour les KPI et la production des états mail
+
+Il existe 4 à 5 états mail (EDD) indispensables pour 2026.
+Environ une cinquantaine d’EDD existent au total (un EDD porte des KPI).
+
+Intégration d’un outil de GED pour la conservation des états mail et leur consultation via VISION.
+
+Intégration — ou non — d’un moteur de GED, éventuellement dans le cadre d’un ITSVC ESTREEM pour le Reporting, cette fonctionnalité étant requise par le service Reporting.
+
+Cette intégration peut être décalée dans le temps, mais il sera nécessaire de conserver l’historique des rapports générés.
