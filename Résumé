@@ -1,28 +1,27 @@
-Récupération des fonctions de WCR : calcul des agrégats pour l’usage des fonctions « états mail » (Reporting) et « KPI » (dashboard du portail VISION) — mutualisation et répartition des responsabilités
+Retrieval of WCR functionalities: aggregation calculations to support the “Email Reports” (Reporting) and “KPI” functions (VISION portal dashboards) — pooling and allocation of responsibilities.
 
-La récupération des fonctions de WCR s’inscrit dans la modernisation globale du SID et permettra d’exploiter les données transactionnelles issues d’ESTREEM, mises à disposition via le socle data.
+1) Migration of WCR functionalities
 
-Note : Certains EDD devront être repris dans le cadre du lot 1 de l’acquisition, prévu en janvier 2027.
+The migration of WCR functionalities is part of the overall modernization of the Information System for Decision Support (SID) and will enable the use of transactional data originating from ESTREEM, made available through the data platform.
 
-ITSVC :
-https://fluence-group.echonet/downl…/attachments/539691501/Accepta%20WCR%20Integration%20and%20data%20platform%20evolution%20draft%20v1.3.pptx?version=1&modificationDate=1739894780000&api=v2
-	•	Caprice : production des états mail à reprendre par le service Reporting
-	•	Découpage en deux composants : front-end et back-end
-	•	Rattachement au portail pour le front-end
-	•	Rattachement au socle data pour le back-end
-	•	50 % des fonctionnalités entreprises sont couvertes ; il reste notamment :
-	•	la fraude,
-	•	les annonces statistiques.
+Aggregation calculations for KPIs and production of email reports (EDD):
+There are 5 critical email reports (EDD) required for 2026.
+Approximately fifty EDDs exist overall (each EDD carries KPIs).
 
-⸻
+50% of remaining analytics dashboard functionalities still to be migrated to the VISION portal.
 
-Calcul des agrégats pour les KPI et la production des états mail
+Integration of an Electronic Document Management (EDM/GED) tool to ensure the storage of email reports and their consultation via the VISION portal.
 
-Il existe 4 à 5 états mail (EDD) indispensables pour 2026.
-Environ une cinquantaine d’EDD existent au total (un EDD porte des KPI).
+2) Rationalization of reference data and centralization within the data platform
 
-Intégration d’un outil de GED pour la conservation des états mail et leur consultation via VISION.
+Centralized definition within the card payments data platform to guarantee a single source of truth for reference data (Merchants and Contracts) across all assets, and to enrich transactional data.
 
-Intégration — ou non — d’un moteur de GED, éventuellement dans le cadre d’un ITSVC ESTREEM pour le Reporting, cette fonctionnalité étant requise par le service Reporting.
+Study and implementation of reference data flow integration, including the data model within the Organized Layer, as well as data lifecycle management (update events, retention policies, etc.).
 
-Cette intégration peut être décalée dans le temps, mais il sera nécessaire de conserver l’historique des rapports générés.
+3) Implementation of onboarding process orchestration within the VISION portal
+
+Connected onboarding
+
+Online onboarding
+
+Requirement for a digital vault to securely store and manage contracts
