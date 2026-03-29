@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- Title -->
+    <mxCell id="title" value="C4 Model — Level 2: Container Diagram&#xa;Real-Time KPI Platform for Payment Acquiring" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="377" y="20" width="900" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════
+         EXTERNAL ACTORS
+    ══════════════════════════════════════════════════════ -->
+
+    <mxCell id="merchant" value="&lt;b&gt;Merchant&lt;/b&gt;&#xa;[Person]" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#ffffff;align=center;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="40" y="490" width="100" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════
+         EXISTING PIPELINE BOUNDARY (dashed)
+    ══════════════════════════════════════════════════════ -->
+
+    <mxCell id="existing_boundary" value="Existing Transaction Processing Pipeline [External]" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=13;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="160" y="80" width="420" height="180" as="geometry" />
+    </mxCell>
+
+    <mxCell id="kafka_in" value="&lt;b&gt;Apache Kafka&lt;/b&gt;&#xa;[Message Broker]&#xa;&#xa;Topic: transactions.enriched&#xa;Key: merchant_id / pos_id&#xa;Retention: 7 days" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="200" y="120" width="240" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="mongodb" value="&lt;b&gt;MongoDB&lt;/b&gt;&#xa;[Database]&#xa;&#xa;Enriched transactions&#xa;historical store" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="470" y="130" width="180" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════
+         KPI PLATFORM BOUNDARY
+    ══════════════════════════════════════════════════════ -->
+
+    <mxCell id="kpi_boundary" value="Real-Time KPI Platform [System Boundary]" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#1168BD;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=14;fontStyle=1;fontColor=#1168BD;" vertex="1" parent="1">
+      <mxGeometry x="160" y="310" width="1150" height="640" as="geometry" />
+    </mxCell>
+
+    <!-- ─── Container 1: KPI Streams Processor ─── -->
+    <mxCell id="kpi_streams" value="&lt;b&gt;KPI Streams Processor&lt;/b&gt;&#xa;[Container: Kafka Streams / Java]&#xa;&#xa;Consumes transactions.enriched.&#xa;Re-keys by (pos_id | business_date).&#xa;Maintains PosKpiAccumulator per key.&#xa;Publishes snapshots to kpi.updates.&#xa;Consumer group: kpi-processor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;arcSize=4;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="200" y="360" width="320" height="200" as="geometry" />
+    </mxCell>
+
+    <!-- ─── Container 2: RocksDB State Store ─── -->
+    <mxCell id="rocksdb" value="&lt;b&gt;RocksDB State Store&lt;/b&gt;&#xa;[Container: Embedded KV Store]&#xa;&#xa;kpi-store-pos-date&#xa;Key: pos_id|business_date&#xa;Value: PosKpiAccumulator&#xa;Retention: 90 days&#xa;Backed by Kafka changelog" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="570" y="360" width="240" height="180" as="geometry" />
+    </mxCell>
+
+    <!-- ─── Container 3: Kafka changelog + kpi.updates ─── -->
+    <mxCell id="kafka_kpi" value="&lt;b&gt;Apache Kafka&lt;/b&gt;&#xa;[Message Broker]&#xa;&#xa;Topic: kpi.updates&#xa;  KPI snapshots + retroactive flag&#xa;Topic: kpi-processor-*-changelog&#xa;  State store backup (90d)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="570" y="590" width="290" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- ─── Container 4: KPI Query Service ─── -->
+    <mxCell id="query_svc" value="&lt;b&gt;KPI Query Service&lt;/b&gt;&#xa;[Container: Spring Boot / REST]&#xa;&#xa;Synchronous KPI retrieval.&#xa;Interactive Query API routing.&#xa;Cross-POS consolidation (merge).&#xa;Cross-instance HTTP forwarding." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="920" y="360" width="300" height="180" as="geometry" />
+    </mxCell>
+
+    <!-- ─── Container 5: KPI Push Service ─── -->
+    <mxCell id="push_svc" value="&lt;b&gt;KPI Push Service&lt;/b&gt;&#xa;[Container: Spring Boot / Kafka Consumer]&#xa;&#xa;Consumes kpi.updates.&#xa;Dispatches snapshots via&#xa;WebSocket (STOMP) or SSE.&#xa;Routes retroactive corrections." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="920" y="590" width="300" height="180" as="geometry" />
+    </mxCell>
+
+    <!-- ─── Container 6: Redis Cache (optional) ─── -->
+    <mxCell id="redis" value="&lt;b&gt;Redis Cache&lt;/b&gt;&#xa;[Container: Redis — optional]&#xa;&#xa;Secondary KPI store.&#xa;Key: kpi:{pos_id}:{date}&#xa;Sub-ms read latency.&#xa;Populated by Push Service." style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="920" y="820" width="240" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- ─── Container 7: API Gateway ─── -->
+    <mxCell id="api_gw" value="&lt;b&gt;API Gateway&lt;/b&gt;&#xa;[Container: Gateway / Nginx]&#xa;&#xa;Auth, tenant isolation,&#xa;POS-level access control,&#xa;TLS termination." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="560" y="820" width="260" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- ─── External: Dashboard Frontend ─── -->
+    <mxCell id="dashboard" value="&lt;b&gt;Merchant Dashboard&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Web / mobile frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="540" width="220" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════
+         RELATIONSHIPS
+    ══════════════════════════════════════════════════════ -->
+
+    <!-- Kafka enriched → KPI Streams -->
+    <mxCell id="r1" value="Consumes (independent&#xa;consumer group kpi-processor)&#xa;[Kafka, event_time extracted]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="kafka_in" target="kpi_streams">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- KPI Streams → RocksDB -->
+    <mxCell id="r2" value="Read/Write accumulator&#xa;[Local RocksDB]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="kpi_streams" target="rocksdb">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- KPI Streams → kafka kpi -->
+    <mxCell id="r3" value="Publishes KpiSnapshot&#xa;[Kafka: kpi.updates]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="kpi_streams" target="kafka_kpi">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- RocksDB → changelog -->
+    <mxCell id="r4" value="Changelog replication&#xa;[Kafka: *-changelog]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="rocksdb" target="kafka_kpi">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Query Service → RocksDB (Interactive Query) -->
+    <mxCell id="r5" value="Interactive Query API&#xa;[Local or forwarded HTTP]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="query_svc" target="rocksdb">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1070" y="460" /><mxPoint x="700" y="460" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Push Service ← kafka kpi -->
+    <mxCell id="r6" value="Consumes KPI snapshots&#xa;[Kafka: kpi.updates]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="kafka_kpi" target="push_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Push Service → Redis -->
+    <mxCell id="r7" value="Writes KpiSnapshot&#xa;[Redis SET kpi:{pos}:{date}]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="push_svc" target="redis">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Query Service → Redis -->
+    <mxCell id="r8" value="Read (cache hit)&#xa;[Redis GET]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="query_svc" target="redis">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Merchant → API GW -->
+    <mxCell id="r9" value="REST / WebSocket&#xa;[HTTPS, authenticated]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#08427B;fontColor=#08427B;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="merchant" target="api_gw">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- API GW → Query Service -->
+    <mxCell id="r10" value="Pull KPIs&#xa;[Internal HTTP]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="api_gw" target="query_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- API GW → Push Service -->
+    <mxCell id="r11" value="WebSocket upgrade&#xa;[Internal WS]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="api_gw" target="push_svc">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Push Service → Dashboard -->
+    <mxCell id="r12" value="Pushes KPI updates&#xa;[WebSocket / SSE]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="push_svc" target="dashboard">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Query Service → Dashboard (REST) -->
+    <mxCell id="r13" value="Responds with&#xa;KpiSnapshot [REST JSON]" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="query_svc" target="dashboard">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Legend -->
+    <mxCell id="leg_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#CCCCCC;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="40" y="870" width="480" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_title2" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="55" y="880" width="80" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg1" value="" style="rounded=1;fillColor=#1168BD;strokeColor=#0E5EA3;" vertex="1" parent="1"><mxGeometry x="55" y="908" width="20" height="20" as="geometry" /></mxCell>
+    <mxCell id="leg1t" value="Container (in scope)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="82" y="908" width="160" height="20" as="geometry" /></mxCell>
+    <mxCell id="leg2" value="" style="rounded=1;fillColor=#999999;strokeColor=#6C6C6C;" vertex="1" parent="1"><mxGeometry x="260" y="908" width="20" height="20" as="geometry" /></mxCell>
+    <mxCell id="leg2t" value="External system / container" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="287" y="908" width="200" height="20" as="geometry" /></mxCell>
+    <mxCell id="leg3t" value="━━▶  Synchronous call    ╌╌▶  Asynchronous / optional" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="55" y="940" width="450" height="20" as="geometry" /></mxCell>
+
+  </root>
+</mxGraphModel>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- Title -->
+    <mxCell id="title" value="C4 Model — Level 1: System Context&#xa;Real-Time KPI Platform for Payment Acquiring" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="427" y="30" width="800" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Legend box -->
+    <mxCell id="leg_title" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=1;fontColor=#444444;" vertex="1" parent="1">
+      <mxGeometry x="40" y="900" width="100" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_person" value="Person" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#ffffff;align=center;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="930" width="60" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_system" value="System&#xa;(in scope)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="130" y="950" width="110" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_ext" value="External&#xa;System" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="270" y="950" width="110" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         ACTORS / PERSONS
+    ════════════════════════════════════════════════════════════════ -->
+
+    <!-- Merchant (end user) -->
+    <mxCell id="merchant" value="&lt;b&gt;Merchant&lt;/b&gt;&#xa;[Person]&#xa;&#xa;Monitors payment activity&#xa;via dashboard" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#ffffff;align=center;fontSize=12;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="140" y="440" width="120" height="140" as="geometry" />
+    </mxCell>
+
+    <!-- Platform Operator -->
+    <mxCell id="operator" value="&lt;b&gt;Platform Operator&lt;/b&gt;&#xa;[Person]&#xa;&#xa;Monitors system health&#xa;and data quality" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#ffffff;align=center;fontSize=12;fontStyle=0;" vertex="1" parent="1">
+      <mxGeometry x="140" y="620" width="120" height="140" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SYSTEM IN SCOPE
+    ════════════════════════════════════════════════════════════════ -->
+
+    <mxCell id="kpi_system" value="&lt;b&gt;Real-Time KPI Platform&lt;/b&gt;&#xa;[Software System]&#xa;&#xa;Computes and exposes real-time&#xa;KPIs (total collected, avg basket,&#xa;fraud rate, approval rate) per&#xa;point of sale and business day.&#xa;Handles late event correction." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=13;fontStyle=0;arcSize=4;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="590" y="400" width="480" height="180" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         EXTERNAL SYSTEMS
+    ════════════════════════════════════════════════════════════════ -->
+
+    <!-- Payment Processors -->
+    <mxCell id="payment_proc" value="&lt;b&gt;Payment Processors&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Visa, Mastercard, local&#xa;acquirers. Produce raw&#xa;transaction authorization events." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;fontStyle=0;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1100" y="200" width="220" height="140" as="geometry" />
+    </mxCell>
+
+    <!-- Fraud Detection Engine -->
+    <mxCell id="fraud_engine" value="&lt;b&gt;Fraud Detection Engine&lt;/b&gt;&#xa;[External System]&#xa;&#xa;3DS / real-time fraud scoring.&#xa;Enriches events with fraud flags." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;fontStyle=0;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1100" y="380" width="220" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- Merchant Dashboard -->
+    <mxCell id="dashboard" value="&lt;b&gt;Merchant Dashboard&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Web / mobile frontend.&#xa;Displays KPI widgets in real time." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;fontStyle=0;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1100" y="560" width="220" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- Existing Transaction Pipeline -->
+    <mxCell id="tx_pipeline" value="&lt;b&gt;Transaction Processing Pipeline&lt;/b&gt;&#xa;[External System — existing]&#xa;&#xa;Reconciliation, correlation,&#xa;enrichment. Publishes to&#xa;transactions.enriched topic." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;fontStyle=0;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="590" y="150" width="300" height="150" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         RELATIONSHIPS
+    ════════════════════════════════════════════════════════════════ -->
+
+    <!-- Merchant → KPI Platform -->
+    <mxCell id="r1" value="Views KPI dashboard&#xa;[HTTPS / WebSocket]" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;strokeColor=#1168BD;fontColor=#1168BD;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="merchant" target="kpi_system">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Operator → KPI Platform -->
+    <mxCell id="r2" value="Monitors system health&#xa;[Internal tooling]" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;strokeColor=#1168BD;fontColor=#1168BD;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="operator" target="kpi_system">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Payment Processors → Tx Pipeline -->
+    <mxCell id="r3" value="Authorization events&#xa;[Kafka / ISO 8583]" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="payment_proc" target="tx_pipeline">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Fraud Engine → Tx Pipeline -->
+    <mxCell id="r4" value="Fraud flags &amp; scores&#xa;[Internal API]" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="fraud_engine" target="tx_pipeline">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- Tx Pipeline → KPI Platform -->
+    <mxCell id="r5" value="Enriched transaction events&#xa;[Kafka topic: transactions.enriched]" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="tx_pipeline" target="kpi_system">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- KPI Platform → Dashboard -->
+    <mxCell id="r6" value="KPI snapshots&#xa;[WebSocket / SSE / REST]" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="kpi_system" target="dashboard">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>
