@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+  <root>
+    <mxCell id="0" /><mxCell id="1" parent="0" />
+
+    <mxCell id="title" value="C4 Model — Level 1: System Context&#xa;Card Payment Data Platform — Real-Time KPI for Accepta Vision Portal" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="460" y="20" width="1000" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- BNPP boundary -->
+    <mxCell id="bnpp" value="BNPP Group" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#1F3864;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=15;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="390" y="90" width="1450" height="920" as="geometry" />
+    </mxCell>
+
+    <!-- Merchant -->
+    <mxCell id="merchant" value="&lt;b&gt;Merchant&lt;/b&gt;&#xa;[Person]&#xa;&#xa;Consults TPE Dashboard&#xa;&amp; Payment Dashboard" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#ffffff;align=center;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1810" y="480" width="120" height="140" as="geometry" />
+    </mxCell>
+
+    <!-- === LEFT: Transaction Producers === -->
+
+    <mxCell id="nepting" value="&lt;b&gt;NEPTING&lt;/b&gt;&#xa;[External System]&#xa;&#xa;In-store Acceptance&#xa;ISN terminal transactions&#xa;→ Apigee proxy (HTTPS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="60" y="320" width="210" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="k2" value="&lt;b&gt;K2 (Partecis)&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Authorization, Fraud,&#xa;Chargeback, Settlement&#xa;→ DHF (topic Kafka)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="60" y="500" width="210" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="fcc" value="&lt;b&gt;FCC (Open)&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Merchant contract&#xa;reference data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="60" y="680" width="210" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="ibm" value="&lt;b&gt;IBM Cloud Object Storage&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Raw batch files&#xa;(Remises, settlements)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="60" y="840" width="210" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- DHF intermediary -->
+    <mxCell id="dhf" value="&lt;b&gt;DHF&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Kafka broker facade.&#xa;Routes BCEF-IT events&#xa;to CPDP." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="330" y="490" width="170" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- Apigee -->
+    <mxCell id="apigee" value="&lt;b&gt;Acceptance Apigee Proxy&lt;/b&gt;&#xa;[External System]&#xa;&#xa;HTTPS gateway for&#xa;in-store acceptance&#xa;events" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="330" y="310" width="190" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- === CENTRE: Card Payment Data Platform === -->
+    <mxCell id="cpdp" value="&lt;b&gt;Card Payment Data Platform&lt;/b&gt;&#xa;[Software System — in scope]&#xa;&#xa;Ingests, correlates and enriches&#xa;payment transaction events.&#xa;Computes real-time KPIs per&#xa;(store_id, business_date, currency).&#xa;Exposes KPIs via REST API." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=14;arcSize=3;" vertex="1" parent="1">
+      <mxGeometry x="720" y="400" width="440" height="210" as="geometry" />
+    </mxCell>
+
+    <!-- Observability -->
+    <mxCell id="dyn" value="&lt;b&gt;Dynatrace + LAAS (ELK)&lt;/b&gt;&#xa;[External System]&#xa;&#xa;APM, log aggregation,&#xa;platform observability" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="720" y="140" width="210" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="sso" value="&lt;b&gt;SSO (OAuth2)&lt;/b&gt;&#xa;[External System]&#xa;&#xa;BNPP group identity&#xa;provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="990" y="140" width="180" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- === RIGHT: Accepta Vision Portal === -->
+    <mxCell id="vision_bnd" value="Accepta Vision Portal" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#0E5EA3;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=14;fontStyle=1;fontColor=#0E5EA3;" vertex="1" parent="1">
+      <mxGeometry x="1240" y="250" width="530" height="700" as="geometry" />
+    </mxCell>
+
+    <mxCell id="vision_back" value="&lt;b&gt;Vision Portal Backend&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Backend for TPE Dashboard&#xa;&amp; Payment Dashboard.&#xa;Calls CPDP KPI API (HTTPS)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1270" y="360" width="210" height="140" as="geometry" />
+    </mxCell>
+
+    <mxCell id="vision_front" value="&lt;b&gt;Vision Frontend&lt;/b&gt;&#xa;[External System]&#xa;&#xa;TPE Dashboard&#xa;Payment Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1530" y="310" width="190" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="wcr_back" value="&lt;b&gt;WCR Backend&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Reporting backend.&#xa;Stores to WCR Exadata." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1270" y="580" width="190" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="wcr_front" value="&lt;b&gt;WCR Frontend&lt;/b&gt;&#xa;[External System]&#xa;&#xa;WCR Reporting UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1530" y="530" width="190" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="wcr_exa" value="&lt;b&gt;WCR Exadata&lt;/b&gt;&#xa;[External Database]&#xa;&#xa;Reporting data store" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1530" y="700" width="190" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- === RELATIONS === -->
+    <mxCell id="r1" value="HTTPS / ISN" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="nepting" target="apigee"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r2" value="Acceptance events (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="apigee" target="cpdp"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r3" value="Auth/Fraud/Settlement" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="k2" target="dhf"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r4" value="Kafka topics (payment.transaction.*)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="dhf" target="cpdp"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r5" value="Merchant contract ref data" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="fcc" target="cpdp"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="165" y="735" /><mxPoint x="165" y="980" /><mxPoint x="940" y="980" /><mxPoint x="940" y="610" /></Array></mxGeometry></mxCell>
+    <mxCell id="r6" value="Batch files (load files)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="ibm" target="cpdp"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="165" y="895" /><mxPoint x="165" y="1010" /><mxPoint x="960" y="1010" /><mxPoint x="960" y="610" /></Array></mxGeometry></mxCell>
+    <mxCell id="r7" value="KPI API / Transaction API (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="cpdp" target="vision_back"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r8" value="Trx Export API (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="cpdp" target="wcr_back"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r9" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="vision_back" target="vision_front"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r10" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="wcr_back" target="wcr_front"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r11" value="store" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="wcr_back" target="wcr_exa"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r12" value="Dashboards (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#08427B;fontColor=#08427B;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="merchant" target="vision_front"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r13" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#08427B;endArrow=block;endFill=1;" edge="1" parent="1" source="merchant" target="wcr_front"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r14" value="Metrics / logs" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#999999;fontColor=#666666;fontSize=11;endArrow=open;dashed=1;" edge="1" parent="1" source="cpdp" target="dyn"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="r15" value="OAuth2 token validation" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#999999;fontColor=#666666;fontSize=11;endArrow=open;dashed=1;" edge="1" parent="1" source="vision_back" target="sso"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Legend -->
+    <mxCell id="lb" value="" style="rounded=1;fillColor=#F5F5F5;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="60" y="100" width="480" height="90" as="geometry" /></mxCell>
+    <mxCell id="lt" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="76" y="110" width="80" height="18" as="geometry" /></mxCell>
+    <mxCell id="l1" value="" style="rounded=1;fillColor=#1168BD;strokeColor=#0E5EA3;" vertex="1" parent="1"><mxGeometry x="76" y="136" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l1t" value="System in scope (CPDP)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="98" y="136" width="200" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2" value="" style="rounded=1;fillColor=#999999;strokeColor=#6C6C6C;" vertex="1" parent="1"><mxGeometry x="310" y="136" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2t" value="External system" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="332" y="136" width="180" height="16" as="geometry" /></mxCell>
+    <mxCell id="l3t" value="━━▶ Primary data flow    ╌╌▶ Support / observability" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="76" y="160" width="450" height="16" as="geometry" /></mxCell>
+  </root>
+</mxGraphModel>

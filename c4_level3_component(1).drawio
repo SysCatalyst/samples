@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+  <root>
+    <mxCell id="0" /><mxCell id="1" parent="0" />
+
+    <mxCell id="title" value="C4 Model — Level 3: Component Diagram&#xa;Container: KPI Streams Processor — Card Payment Data Platform" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="360" y="20" width="1200" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════ EXTERNAL inputs/outputs ═══════════ -->
+
+    <mxCell id="enriched" value="&lt;b&gt;payment.transaction.enriched.v1&lt;/b&gt;&#xa;[Kafka Topic]&#xa;&#xa;Key: store_id&#xa;Produced by Reconciliation Pipeline&#xa;(existing — not modified)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="40" y="380" width="240" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="current_out" value="&lt;b&gt;kpi.store.day.current.v1&lt;/b&gt;&#xa;[Kafka Topic — Compacted]&#xa;&#xa;Every accumulator update&#xa;Future: Push Service consumer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1640" y="300" width="230" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="snap_out" value="&lt;b&gt;kpi.store.day.snapshot.v1&lt;/b&gt;&#xa;[Kafka Topic — Delete 7d]&#xa;&#xa;Debounced — 1 per key&#xa;per 5-min silence window&#xa;Consumer: KPI Persistence Consumer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1640" y="480" width="230" height="140" as="geometry" />
+    </mxCell>
+
+    <mxCell id="rocksdb_ext" value="&lt;b&gt;RocksDB State Store&lt;/b&gt;&#xa;kpi-store-pos-date&#xa;&#xa;Embedded KV, 90-day retention&#xa;Backed by Kafka changelog topic&#xa;Crash recovery: changelog replay" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="780" y="830" width="260" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════ KPI STREAMS PROCESSOR BOUNDARY ═══════════ -->
+    <mxCell id="boundary" value="KPI Streams Processor [Container Boundary] — application.id: kpi-processor" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#0F6E56;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=14;fontStyle=1;fontColor=#0F6E56;" vertex="1" parent="1">
+      <mxGeometry x="330" y="100" width="1270" height="870" as="geometry" />
+    </mxCell>
+
+    <!-- Component 1: Source Node -->
+    <mxCell id="source" value="&lt;b&gt;Source Node&lt;/b&gt;&#xa;[Component: KStream source]&#xa;&#xa;builder.stream(&quot;payment.transaction.enriched.v1&quot;)&#xa;Consumed.with(enrichedTxSerde)&#xa;  .withTimestampExtractor(...)&#xa;Consumer group: kpi-processor&#xa;Independent from reconcil-pipeline offsets" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="360" y="150" width="310" height="180" as="geometry" />
+    </mxCell>
+
+    <!-- Component 2: TransactionEventTimeExtractor -->
+    <mxCell id="extractor" value="&lt;b&gt;TransactionEventTimeExtractor&lt;/b&gt;&#xa;[Component: TimestampExtractor]&#xa;&#xa;Reads business_timestamp from payload.&#xa;NOT the Kafka record timestamp.&#xa;Anchors all temporal logic on&#xa;the business event time.&#xa;Fallback: partitionTime if null." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="760" y="150" width="300" height="180" as="geometry" />
+    </mxCell>
+
+    <!-- Component 3: Filter Node -->
+    <mxCell id="filter" value="&lt;b&gt;Filter Node&lt;/b&gt;&#xa;[Component: KStream.filter]&#xa;&#xa;Drops events where store_id,&#xa;business_timestamp or currency&#xa;is null. Emits warning metric." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="360" y="390" width="280" height="150" as="geometry" />
+    </mxCell>
+
+    <!-- Component 4: ReKey Node -->
+    <mxCell id="rekey" value="&lt;b&gt;ReKey Node&lt;/b&gt;&#xa;[Component: KStream.selectKey]&#xa;&#xa;Composite key:&#xa;  store_id + &quot;|&quot; + business_date + &quot;|&quot; + currency&#xa;  e.g. &quot;pos-789|2024-03-14|EUR&quot;&#xa;business_date ← business_timestamp.atZone(UTC)&#xa;Triggers Kafka repartition." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="720" y="390" width="330" height="180" as="geometry" />
+    </mxCell>
+
+    <!-- Component 5: Aggregate Node -->
+    <mxCell id="agg" value="&lt;b&gt;Aggregate Node&lt;/b&gt;&#xa;[Component: KGroupedStream.aggregate]&#xa;&#xa;Initializer: new PosKpiAccumulator()&#xa;Aggregator: acc.update(tx)&#xa;  — idempotence via processedEventIds Set&#xa;  — gross/refund/success/failed/fraud sums&#xa;  — last_event_timestamp updated&#xa;KeyValueStore: kpi-store-pos-date (90d)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="530" y="620" width="340" height="200" as="geometry" />
+    </mxCell>
+
+    <!-- Component 6: PosKpiAccumulator (domain) -->
+    <mxCell id="accumulator" value="&lt;b&gt;PosKpiAccumulator&lt;/b&gt;&#xa;[Component: Domain POJO]&#xa;&#xa;Statistical sufficients (no derived metrics stored):&#xa;  grossAmountCents, refundAmountCents&#xa;  successCount, failedCount, totalCount&#xa;  fraudCount, fraudAmountCents&#xa;  lastEventTimestamp&#xa;  processedEventIds: Set&lt;String&gt;  ← dedup&#xa;Derived: avgBasket, failureRate, netAmount&#xa;  computed at toSnapshot() call time." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="960" y="570" width="330" height="260" as="geometry" />
+    </mxCell>
+
+    <!-- Component 7: Suppress / Debounce -->
+    <mxCell id="suppress" value="&lt;b&gt;Suppress / Debounce Node&lt;/b&gt;&#xa;[Component: Suppressed.untilTimeLimit()]&#xa;&#xa;Dirty Key Tracking pattern:&#xa;  silence window: 5 min per key&#xa;  buffer cap: 50 MB (spill to disk)&#xa;N updates per key → 1 emission&#xa;→ kpi.store.day.snapshot.v1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#854F0B;strokeColor=#633806;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1100" y="380" width="310" height="170" as="geometry" />
+    </mxCell>
+
+    <!-- Component 8: Snapshot Mapper -->
+    <mxCell id="mapper" value="&lt;b&gt;Snapshot Mapper&lt;/b&gt;&#xa;[Component: KTable.toStream().map()]&#xa;&#xa;Parses composite key → storeId, date, currency.&#xa;Calls acc.toSnapshot(storeId, date, currency).&#xa;Sets is_retroactive_correction flag&#xa;  (businessDate != today UTC).&#xa;Sets computed_at = Instant.now()." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1100" y="150" width="310" height="190" as="geometry" />
+    </mxCell>
+
+    <!-- Component 9: Sink Current -->
+    <mxCell id="sink_current" value="&lt;b&gt;Sink — Current&lt;/b&gt;&#xa;[Component: KStream.to()]&#xa;&#xa;→ kpi.store.day.current.v1&#xa;Every KTable update&#xa;EOS: exactly_once_v2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1470" y="200" width="110" height="150" as="geometry" />
+    </mxCell>
+
+    <!-- Component 10: Sink Snapshot -->
+    <mxCell id="sink_snap" value="&lt;b&gt;Sink — Snapshot&lt;/b&gt;&#xa;[Component: KStream.to()]&#xa;&#xa;→ kpi.store.day.snapshot.v1&#xa;After Suppress debounce&#xa;EOS: exactly_once_v2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#854F0B;strokeColor=#633806;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1470" y="400" width="110" height="150" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════ RELATIONS ═══════════ -->
+
+    <!-- enriched → source -->
+    <mxCell id="r1" value="Kafka poll (at-least-once)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="enriched" target="source"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- source → extractor (invoked per record) -->
+    <mxCell id="r2" value="invoked per record" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="source" target="extractor"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- source → filter -->
+    <mxCell id="r3" value="KStream&lt;String, EnrichedTransaction&gt;" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="source" target="filter"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- filter → rekey -->
+    <mxCell id="r4" value="valid events only" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="filter" target="rekey"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- extractor → rekey (business_timestamp epoch) -->
+    <mxCell id="r5" value="business_timestamp epoch millis" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=open;dashed=1;" edge="1" parent="1" source="extractor" target="rekey"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- rekey → agg -->
+    <mxCell id="r6" value="KGroupedStream — repartition on composite key" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="rekey" target="agg"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- agg ↔ accumulator -->
+    <mxCell id="r7" value="acc.update(tx)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="agg" target="accumulator"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- agg ↔ rocksdb -->
+    <mxCell id="r8" value="PUT/GET (RocksDB embedded)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="agg" target="rocksdb_ext"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- agg → mapper (KTable → toStream) -->
+    <mxCell id="r9" value="KTable → toStream()" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="agg" target="mapper"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="700" y="720" /><mxPoint x="1255" y="720" /><mxPoint x="1255" y="340" /></Array></mxGeometry></mxCell>
+
+    <!-- accumulator → mapper (toSnapshot) -->
+    <mxCell id="r10" value="toSnapshot(storeId, date, currency)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="accumulator" target="mapper"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- mapper → sink_current -->
+    <mxCell id="r11" value="KpiSnapshot (all updates)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="mapper" target="sink_current"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- agg → suppress (via KTable) -->
+    <mxCell id="r12" value="KTable (suppress branch)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#854F0B;fontColor=#854F0B;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="agg" target="suppress"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="870" y="820" /><mxPoint x="1255" y="820" /><mxPoint x="1255" y="550" /></Array></mxGeometry></mxCell>
+
+    <!-- suppress → sink_snap -->
+    <mxCell id="r13" value="debounced KpiSnapshot" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#854F0B;fontColor=#854F0B;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="suppress" target="sink_snap"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- sink_current → topic_out -->
+    <mxCell id="r14" value="EOS produce" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#3C3489;fontColor=#3C3489;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="sink_current" target="current_out"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- sink_snap → snap_topic_out -->
+    <mxCell id="r15" value="EOS produce" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#633806;fontColor=#633806;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="sink_snap" target="snap_out"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Legend -->
+    <mxCell id="lb" value="" style="rounded=1;fillColor=#F5F5F5;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="40" y="100" width="280" height="130" as="geometry" /></mxCell>
+    <mxCell id="lt" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="56" y="110" width="80" height="18" as="geometry" /></mxCell>
+    <mxCell id="l1" value="" style="rounded=1;fillColor=#0F6E56;strokeColor=#085041;" vertex="1" parent="1"><mxGeometry x="56" y="138" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l1t" value="Streams topology component" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="138" width="230" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2" value="" style="rounded=1;fillColor=#1168BD;strokeColor=#0E5EA3;" vertex="1" parent="1"><mxGeometry x="56" y="162" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2t" value="Domain / business component" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="162" width="230" height="16" as="geometry" /></mxCell>
+    <mxCell id="l3" value="" style="rounded=1;fillColor=#854F0B;strokeColor=#633806;" vertex="1" parent="1"><mxGeometry x="56" y="186" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l3t" value="Throttle / debounce component" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="186" width="230" height="16" as="geometry" /></mxCell>
+    <mxCell id="l4" value="" style="rounded=1;fillColor=#534AB7;strokeColor=#3C3489;" vertex="1" parent="1"><mxGeometry x="56" y="210" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l4t" value="Kafka topic (external)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="210" width="230" height="16" as="geometry" /></mxCell>
+  </root>
+</mxGraphModel>

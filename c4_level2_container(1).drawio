@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+  <root>
+    <mxCell id="0" /><mxCell id="1" parent="0" />
+
+    <mxCell id="title" value="C4 Model — Level 2: Container Diagram&#xa;Card Payment Data Platform — KPI Computation &amp; Exposure" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="360" y="20" width="1200" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════ EXTERNAL PRODUCERS (LEFT) ═══════════════ -->
+
+    <mxCell id="apigee" value="&lt;b&gt;Acceptance Apigee Proxy&lt;/b&gt;&#xa;[External — HTTPS gateway]&#xa;&#xa;Routes in-store acceptance&#xa;events from NEPTING" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="40" y="200" width="210" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="dhf" value="&lt;b&gt;DHF / BCEF-IT&lt;/b&gt;&#xa;[External — Kafka producer]&#xa;&#xa;K2 Partecis events:&#xa;Auth, Fraud, Chargeback,&#xa;Settlement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="40" y="380" width="210" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="ibm_fcc" value="&lt;b&gt;IBM COS / FCC&lt;/b&gt;&#xa;[External — Batch / Ref data]&#xa;&#xa;Raw batch files (Remises)&#xa;Merchant contracts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="40" y="570" width="210" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════ CPDP BOUNDARY ═══════════════ -->
+    <mxCell id="cpdp_bnd" value="Card Payment Data Platform [System Boundary]" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#1168BD;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=14;fontStyle=1;fontColor=#1168BD;" vertex="1" parent="1">
+      <mxGeometry x="300" y="100" width="1100" height="980" as="geometry" />
+    </mxCell>
+
+    <!-- ── Ingestion & Processing layer ── -->
+    <mxCell id="ing_bnd" value="Ingestion &amp; Processing" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;strokeWidth=1;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=12;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="320" y="140" width="350" height="300" as="geometry" />
+    </mxCell>
+
+    <mxCell id="raw_topic" value="&lt;b&gt;payment.transaction.raw.v1&lt;/b&gt;&#xa;[Container: Kafka Topic]&#xa;&#xa;Raw enriched events&#xa;from all producers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="340" y="180" width="210" height="100" as="geometry" />
+    </mxCell>
+
+    <mxCell id="reconcil" value="&lt;b&gt;Reconciliation Pipeline&lt;/b&gt;&#xa;[Container: Kafka Streams]&#xa;&#xa;Correlation, enrichment&#xa;with FCC &amp; MongoDB ref.&#xa;Consumer group: reconcil-pipeline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="340" y="320" width="230" height="100" as="geometry" />
+    </mxCell>
+
+    <mxCell id="enriched_topic" value="&lt;b&gt;payment.transaction.enriched.v1&lt;/b&gt;&#xa;[Container: Kafka Topic]&#xa;&#xa;Enriched canonical events&#xa;Key: store_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="340" y="460" width="230" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- ── KPI Computation layer (NEW) ── -->
+    <mxCell id="kpi_bnd" value="KPI Computation (new)" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#0F6E56;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=12;fontStyle=1;fontColor=#0F6E56;" vertex="1" parent="1">
+      <mxGeometry x="620" y="140" width="440" height="660" as="geometry" />
+    </mxCell>
+
+    <mxCell id="kpi_streams" value="&lt;b&gt;KPI Streams Processor&lt;/b&gt;&#xa;[Container: Kafka Streams / Java]&#xa;&#xa;Consumer group: kpi-processor&#xa;Composite key: store_id|date|currency&#xa;Aggregates: PosKpiAccumulator&#xa;Pattern: Dirty Key Tracking&#xa;(Suppress 5 min)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="640" y="200" width="270" height="180" as="geometry" />
+    </mxCell>
+
+    <mxCell id="rocksdb" value="&lt;b&gt;RocksDB State Store&lt;/b&gt;&#xa;[Container: Embedded KV Store]&#xa;&#xa;kpi-store-pos-date&#xa;Key: store_id|date|currency&#xa;Retention: 90 days&#xa;Changelog-backed (fault tolerant)" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#0F6E56;strokeColor=#085041;fontColor=#ffffff;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="640" y="420" width="240" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="current_topic" value="&lt;b&gt;kpi.store.day.current.v1&lt;/b&gt;&#xa;[Container: Kafka Topic — Compacted]&#xa;&#xa;Full-fidelity KPI snapshots&#xa;(every accumulator update)&#xa;Source of record — Kafka layer&#xa;Future: Push Service / WebSocket" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="640" y="590" width="240" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="snap_topic" value="&lt;b&gt;kpi.store.day.snapshot.v1&lt;/b&gt;&#xa;[Container: Kafka Topic — Delete 7d]&#xa;&#xa;Debounced KPI snapshots&#xa;(1 per key per 5-min silence)&#xa;Drives MongoDB persistence" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="900" y="430" width="140" height="150" as="geometry" />
+    </mxCell>
+
+    <mxCell id="changelog" value="&lt;b&gt;*-changelog&lt;/b&gt;&#xa;[Kafka Topic — Compacted]&#xa;&#xa;State store backup&#xa;Retention: 90 days&#xa;Enables crash recovery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#534AB7;strokeColor=#3C3489;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="900" y="220" width="140" height="140" as="geometry" />
+    </mxCell>
+
+    <!-- ── Exposition layer ── -->
+    <mxCell id="expo_bnd" value="Exposition" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;strokeWidth=1;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=12;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="1100" y="140" width="270" height="660" as="geometry" />
+    </mxCell>
+
+    <mxCell id="persistence" value="&lt;b&gt;KPI Persistence Consumer&lt;/b&gt;&#xa;[Container: Spring Boot / Kafka]&#xa;&#xa;Reads kpi.store.day.snapshot.v1&#xa;Batch upsert → MongoDB&#xa;Intra-batch dedup by computedAt&#xa;Manual Kafka offset commit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1120" y="200" width="230" height="160" as="geometry" />
+    </mxCell>
+
+    <mxCell id="mongodb" value="&lt;b&gt;MongoDB — kpi_snapshots&lt;/b&gt;&#xa;[Container: MongoDB Collection]&#xa;&#xa;Read model for dashboards&#xa;Unique index: (store_id, date, currency)&#xa;Index: (merchant_id, date, currency)&#xa;Idempotent upsert (computed_at guard)" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1120" y="410" width="230" height="160" as="geometry" />
+    </mxCell>
+
+    <mxCell id="mongodb_trx" value="&lt;b&gt;MongoDB — transactions&lt;/b&gt;&#xa;[Container: MongoDB — existing]&#xa;&#xa;Enriched transaction store&#xa;Written by reconciliation pipeline" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="440" y="700" width="210" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="kpi_api" value="&lt;b&gt;KPI Query Service&lt;/b&gt;&#xa;[Container: Spring Boot / REST]&#xa;&#xa;GET /kpi/{storeId}/date/{date}/{currency}&#xa;GET /kpi/merchant/{id}/date/{date}/{currency}&#xa;Direct MongoDB read — no Kafka Streams dep.&#xa;X-KPI-Computed-At / X-KPI-Retroactive headers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1120" y="620" width="230" height="160" as="geometry" />
+    </mxCell>
+
+    <mxCell id="trx_api" value="&lt;b&gt;Transaction API&lt;/b&gt;&#xa;[Container: REST — existing]&#xa;&#xa;Existing exposition API&#xa;Reads MongoDB transactions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="620" y="820" width="210" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="trx_export" value="&lt;b&gt;Trx Export API&lt;/b&gt;&#xa;[Container: REST — existing]&#xa;&#xa;Transaction export for WCR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="860" y="820" width="210" height="110" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════ RIGHT: Accepta Vision Portal ═══════════════ -->
+    <mxCell id="avp_bnd" value="Accepta Vision Portal [External]" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=13;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="1430" y="140" width="440" height="840" as="geometry" />
+    </mxCell>
+
+    <mxCell id="vision_back" value="&lt;b&gt;Vision Portal Backend&lt;/b&gt;&#xa;[External Container]&#xa;&#xa;Backend for dashboards.&#xa;Calls KPI Query Service (HTTPS)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1450" y="220" width="200" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="tpe_dash" value="&lt;b&gt;TPE Dashboard&lt;/b&gt;&#xa;[External Container]&#xa;&#xa;Terminal activity KPIs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1680" y="180" width="170" height="100" as="geometry" />
+    </mxCell>
+
+    <mxCell id="pay_dash" value="&lt;b&gt;Payment Dashboard&lt;/b&gt;&#xa;[External Container]&#xa;&#xa;Cash flow, fraud,&#xa;approval rate KPIs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1680" y="300" width="170" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="wcr_back" value="&lt;b&gt;WCR Backend&lt;/b&gt;&#xa;[External Container]&#xa;&#xa;Reads Trx Export API.&#xa;Stores to WCR Exadata." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1450" y="560" width="200" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="wcr_front" value="&lt;b&gt;WCR Frontend&lt;/b&gt;&#xa;[External Container]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1680" y="560" width="170" height="90" as="geometry" />
+    </mxCell>
+
+    <mxCell id="wcr_exa" value="&lt;b&gt;WCR Exadata&lt;/b&gt;&#xa;[External DB]" style="shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1680" y="700" width="170" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- Merchant -->
+    <mxCell id="merchant" value="&lt;b&gt;Merchant&lt;/b&gt;&#xa;[Person]" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#ffffff;align=center;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1840" y="380" width="100" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- SSO / Dynatrace -->
+    <mxCell id="sso" value="&lt;b&gt;SSO OAuth2&lt;/b&gt;&#xa;[External]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1460" y="870" width="140" height="70" as="geometry" /></mxCell>
+    <mxCell id="dyn" value="&lt;b&gt;Dynatrace + ELK&lt;/b&gt;&#xa;[External]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=11;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1640" y="870" width="160" height="70" as="geometry" /></mxCell>
+
+    <!-- ═══════════════ RELATIONS ═══════════════ -->
+
+    <!-- Producers → raw topic -->
+    <mxCell id="ra1" value="Acceptance events (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="apigee" target="raw_topic"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="ra2" value="Kafka events" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="dhf" target="raw_topic"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="ra3" value="batch / ref data" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#444444;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="ibm_fcc" target="raw_topic"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- raw → reconciliation → enriched -->
+    <mxCell id="rb1" value="consume" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#3C3489;fontColor=#3C3489;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="raw_topic" target="reconcil"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rb2" value="publish enriched" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#3C3489;fontColor=#3C3489;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="reconcil" target="enriched_topic"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rb3" value="write" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#666666;fontSize=11;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="reconcil" target="mongodb_trx"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- enriched → KPI Streams -->
+    <mxCell id="rc1" value="consume (kpi-processor group)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="enriched_topic" target="kpi_streams"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- KPI Streams ↔ RocksDB -->
+    <mxCell id="rc2" value="PUT/GET accumulator" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="kpi_streams" target="rocksdb"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- RocksDB → changelog -->
+    <mxCell id="rc3" value="changelog replication" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#3C3489;fontColor=#3C3489;fontSize=11;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="rocksdb" target="changelog"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- KPI Streams → current + snapshot topics -->
+    <mxCell id="rc4" value="every update (no throttle)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="kpi_streams" target="current_topic"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rc5" value="Suppress 5 min (debounced)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#085041;fontColor=#085041;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="kpi_streams" target="snap_topic"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- snapshot → Persistence Consumer → MongoDB -->
+    <mxCell id="rd1" value="consume (kpi-persistence)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="snap_topic" target="persistence"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rd2" value="batch upsert (versioned)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="persistence" target="mongodb"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- MongoDB → KPI Query API -->
+    <mxCell id="rd3" value="point lookup / range scan" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="kpi_api" target="mongodb"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- MongoDB_trx → Transaction API + Export API -->
+    <mxCell id="re1" value="read" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#666666;fontSize=11;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="trx_api" target="mongodb_trx"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="re2" value="read" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#666666;fontSize=11;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="trx_export" target="mongodb_trx"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- KPI API / Trx API → Vision Portal -->
+    <mxCell id="rf1" value="KPI snapshots (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=11;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="kpi_api" target="vision_back"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rf2" value="Trx export (HTTPS)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#666666;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="trx_export" target="wcr_back"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Vision Portal internal -->
+    <mxCell id="rg1" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="vision_back" target="tpe_dash"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rg2" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="vision_back" target="pay_dash"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rg3" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" parent="1" source="wcr_back" target="wcr_front"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rg4" value="store" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#666666;fontColor=#666666;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="wcr_back" target="wcr_exa"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rg5" value="OAuth2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#999999;fontColor=#999999;fontSize=11;endArrow=open;dashed=1;" edge="1" parent="1" source="vision_back" target="sso"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Merchant → Dashboards -->
+    <mxCell id="rh1" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#08427B;fontColor=#08427B;fontSize=11;endArrow=block;endFill=1;" edge="1" parent="1" source="merchant" target="tpe_dash"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="rh2" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#08427B;endArrow=block;endFill=1;" edge="1" parent="1" source="merchant" target="pay_dash"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- Legend -->
+    <mxCell id="lb" value="" style="rounded=1;fillColor=#F5F5F5;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="40" y="100" width="240" height="130" as="geometry" /></mxCell>
+    <mxCell id="lt" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="56" y="110" width="80" height="18" as="geometry" /></mxCell>
+    <mxCell id="l1" value="" style="rounded=1;fillColor=#0F6E56;strokeColor=#085041;" vertex="1" parent="1"><mxGeometry x="56" y="138" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l1t" value="KPI layer (new)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="138" width="180" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2" value="" style="rounded=1;fillColor=#1168BD;strokeColor=#0E5EA3;" vertex="1" parent="1"><mxGeometry x="56" y="162" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2t" value="Exposition layer (new)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="162" width="180" height="16" as="geometry" /></mxCell>
+    <mxCell id="l3" value="" style="rounded=1;fillColor=#534AB7;strokeColor=#3C3489;" vertex="1" parent="1"><mxGeometry x="56" y="186" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l3t" value="Kafka topics" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="186" width="180" height="16" as="geometry" /></mxCell>
+    <mxCell id="l4" value="" style="rounded=1;fillColor=#999999;strokeColor=#6C6C6C;" vertex="1" parent="1"><mxGeometry x="56" y="210" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l4t" value="Existing / external" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="78" y="210" width="180" height="16" as="geometry" /></mxCell>
+  </root>
+</mxGraphModel>

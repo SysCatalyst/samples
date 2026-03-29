@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Solution Study – Real-Time KPI Computation for Payment Acquiring</title>
+<style>
+:root{
+  --c-blue:#0052CC;--c-blue-light:#DEEBFF;--c-blue-dark:#0747A6;
+  --c-teal:#00875A;--c-teal-light:#E3FCEF;--c-teal-dark:#006644;
+  --c-amber:#FF991F;--c-amber-light:#FFFAE6;--c-amber-dark:#974F0C;
+  --c-red:#DE350B;--c-red-light:#FFEBE6;
+  --c-purple:#403294;--c-purple-light:#EAE6FF;
+  --c-gray:#42526E;--c-gray-light:#F4F5F7;--c-gray-mid:#DFE1E6;
+  --c-text:#172B4D;--c-text-sub:#6B778C;
+  --c-bg:#FFFFFF;--c-border:#DFE1E6;
+  --font-body:'Segoe UI',Arial,sans-serif;
+  --font-mono:'Consolas','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);font-size:14px;color:var(--c-text);background:#F4F5F7;line-height:1.7}
+.page-wrapper{max-width:1240px;margin:0 auto;background:var(--c-bg);min-height:100vh}
+.breadcrumb{background:#fff;border-bottom:1px solid var(--c-border);padding:8px 40px;font-size:12px;color:var(--c-text-sub)}
+.breadcrumb a{color:var(--c-blue);text-decoration:none}
+.breadcrumb span{margin:0 6px}
+.page-header{padding:32px 40px 0}
+.page-title{font-size:28px;font-weight:700;color:var(--c-text);line-height:1.3;margin-bottom:6px}
+.page-meta{font-size:12px;color:var(--c-text-sub);display:flex;gap:20px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--c-border)}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;background:var(--c-blue-light);color:var(--c-blue-dark)}
+.badge.green{background:var(--c-teal-light);color:var(--c-teal-dark)}
+.badge.gray{background:var(--c-gray-light);color:var(--c-gray)}
+.badge.purple{background:var(--c-purple-light);color:var(--c-purple)}
+.status{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.status.green{background:var(--c-teal-light);color:var(--c-teal-dark)}
+.status.blue{background:var(--c-blue-light);color:var(--c-blue-dark)}
+.status.yellow{background:var(--c-amber-light);color:var(--c-amber-dark)}
+.page-layout{display:flex;align-items:flex-start}
+.toc-sidebar{width:250px;flex-shrink:0;position:sticky;top:0;max-height:100vh;overflow-y:auto;padding:24px 0 24px 20px;border-right:1px solid var(--c-border)}
+.toc-sidebar h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--c-text-sub);margin-bottom:10px;padding-left:8px}
+.toc-sidebar ul{list-style:none}
+.toc-sidebar li{margin-bottom:2px}
+.toc-sidebar a{display:block;padding:4px 8px;font-size:13px;color:var(--c-text-sub);text-decoration:none;border-radius:3px;transition:background .15s,color .15s}
+.toc-sidebar a:hover{background:var(--c-gray-light);color:var(--c-blue)}
+.toc-l2{padding-left:20px!important;font-size:12px!important}
+.toc-l3{padding-left:34px!important;font-size:11px!important}
+.page-content{flex:1;padding:32px 40px 80px;min-width:0}
+p{margin-bottom:12px;font-size:14px}
+h1{font-size:24px;font-weight:700;color:var(--c-text);margin:40px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--c-blue)}
+h2{font-size:20px;font-weight:700;color:var(--c-text);margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--c-border)}
+h3{font-size:16px;font-weight:700;color:var(--c-text);margin:22px 0 8px}
+h4{font-size:12px;font-weight:700;color:var(--c-gray);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+.section-label{display:inline-block;background:var(--c-blue);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;margin-right:8px;vertical-align:middle}
+ul,ol{padding-left:22px;margin:8px 0 12px}
+li{margin-bottom:5px;font-size:13px}
+code{background:#F4F5F7;border:1px solid var(--c-border);border-radius:3px;padding:1px 5px;font-family:var(--font-mono);font-size:12px;color:#BF2600}
+hr{border:none;border-top:1px solid var(--c-border);margin:30px 0}
+
+/* panels */
+.panel{border-radius:3px;margin:16px 0;border:1px solid}
+.panel-header{padding:8px 14px;font-weight:700;font-size:13px;border-radius:3px 3px 0 0}
+.panel-body{padding:12px 14px;font-size:13px;line-height:1.75}
+.panel-body p{font-size:13px;margin-bottom:8px}
+.panel-body p:last-child{margin-bottom:0}
+.panel-body ul{margin:6px 0}
+.panel-body li{font-size:13px}
+.panel.info{border-color:#4C9AFF}
+.panel.info .panel-header{background:#DEEBFF;color:#0747A6}
+.panel.note{border-color:#6554C0}
+.panel.note .panel-header{background:#EAE6FF;color:#403294}
+.panel.success{border-color:#36B37E}
+.panel.success .panel-header{background:#E3FCEF;color:#006644}
+.panel.warning{border-color:#FFAB00}
+.panel.warning .panel-header{background:#FFFAE6;color:#FF8B00}
+.panel.error{border-color:#FF5630}
+.panel.error .panel-header{background:#FFEBE6;color:#BF2600}
+.panel.tip{border-left:4px solid var(--c-blue);border-top:1px solid var(--c-border);border-right:1px solid var(--c-border);border-bottom:1px solid var(--c-border)}
+.panel.tip .panel-header{background:var(--c-gray-light);color:var(--c-text)}
+
+.decision-box{background:#E3FCEF;border:2px solid #36B37E;border-radius:4px;padding:18px 22px;margin:18px 0}
+.decision-box strong{color:#006644;font-size:15px;display:block;margin-bottom:10px}
+.decision-box ol{margin:0;padding-left:20px}
+.decision-box li{font-size:13px;margin-bottom:6px}
+
+/* code blocks */
+.code-macro{background:#1E1E2E;border-radius:4px;margin:14px 0;overflow:hidden}
+.code-macro-header{background:#2A2A3E;padding:6px 14px;font-size:11px;color:#8899BB;font-family:var(--font-mono);display:flex;justify-content:space-between}
+.code-macro-body{padding:14px 16px;overflow-x:auto}
+.code-macro-body pre{font-family:var(--font-mono);font-size:12px;color:#CDD6F4;line-height:1.65;white-space:pre}
+.kw{color:#89DCEB}.cm{color:#585B70;font-style:italic}.st{color:#A6E3A1}
+.an{color:#CBA6F7}.cl{color:#89B4FA}.nm{color:#FAB387}.ct{color:#F38BA8}
+
+/* tables */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+thead th{background:#F4F5F7;color:var(--c-text);font-weight:700;padding:9px 12px;border:1px solid var(--c-border);text-align:left}
+tbody td{padding:8px 12px;border:1px solid var(--c-border);vertical-align:top}
+tbody tr:nth-child(even){background:#FAFBFC}
+tbody tr:hover{background:#EBF0FF}
+.col-key{font-weight:600;color:var(--c-text);width:22%}
+.tag-good{display:inline-block;background:var(--c-teal-light);color:var(--c-teal-dark);padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+.tag-med{display:inline-block;background:var(--c-amber-light);color:var(--c-amber-dark);padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+.tag-bad{display:inline-block;background:var(--c-red-light);color:var(--c-red);padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+
+/* draw.io macro placeholder */
+.drawio-macro{border:1px solid var(--c-border);border-radius:4px;margin:18px 0;overflow:hidden}
+.drawio-macro-header{background:var(--c-gray-light);padding:8px 14px;font-size:12px;color:var(--c-text-sub);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--c-border)}
+.drawio-placeholder{background:#F8F9FD;padding:44px;text-align:center;font-size:13px;color:var(--c-text-sub);min-height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px}
+.drawio-caption{font-size:12px;color:var(--c-text-sub);text-align:center;padding:8px 14px;border-top:1px solid var(--c-border);font-style:italic}
+
+/* flow block */
+.flow-block{font-family:var(--font-mono);font-size:12px;background:#F4F5F7;border:1px solid var(--c-border);border-left:4px solid var(--c-blue);border-radius:3px;padding:14px 18px;margin:12px 0;line-height:1.9;color:var(--c-text)}
+.flow-block .arrow{color:var(--c-blue);font-weight:700}
+.flow-block .label{color:#BF2600}
+
+/* key-value highlight */
+.kv-box{background:var(--c-gray-light);border:1px solid var(--c-border);border-left:4px solid var(--c-purple);border-radius:3px;padding:12px 16px;margin:12px 0;font-family:var(--font-mono);font-size:13px;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+<div class="breadcrumb">
+  <a href="#">Architecture &amp; Design</a><span>›</span>
+  <a href="#">Payment Platform</a><span>›</span>
+  <a href="#">Analytics &amp; KPI</a><span>›</span>
+  Solution Study — Real-Time KPI Computation
+</div>
+
+<div class="page-header">
+  <div class="page-title">Solution Study — Real-Time KPI Computation for Payment Acquiring</div>
+  <div class="page-meta">
+    <span>Status: <span class="status green">APPROVED</span></span>
+    <span>Version: <span class="badge gray">v3.0</span></span>
+    <span>Date: March 2026</span>
+    <span>Owner: Platform Architecture</span>
+    <span>Labels:
+      <span class="badge">kafka-streams</span>
+      <span class="badge">real-time</span>
+      <span class="badge">kpi</span>
+      <span class="badge">acquiring</span>
+      <span class="badge">mongodb</span>
+      <span class="badge purple">debounced-sink</span>
+    </span>
+  </div>
+</div>
+
+<div class="page-layout">
+
+<!-- ── TOC ── -->
+<nav class="toc-sidebar">
+  <h4>On this page</h4>
+  <ul>
+    <li><a href="#s1">1. Business Context</a></li>
+    <li><a href="#s1-1" class="toc-l2">1.1 Operational Setting</a></li>
+    <li><a href="#s1-2" class="toc-l2">1.2 Business Need — KPI Catalogue</a></li>
+    <li><a href="#s1-3" class="toc-l2">1.3 Architectural Starting Point</a></li>
+    <li><a href="#s2">2. Constraints</a></li>
+    <li><a href="#s2-1" class="toc-l2">2.1 Functional</a></li>
+    <li><a href="#s2-1-1" class="toc-l3">KPI semantics</a></li>
+    <li><a href="#s2-1-2" class="toc-l3">Business timestamp</a></li>
+    <li><a href="#s2-1-3" class="toc-l3">Late event integration</a></li>
+    <li><a href="#s2-1-4" class="toc-l3">Cross-POS consolidation</a></li>
+    <li><a href="#s2-1-5" class="toc-l3">Idempotency &amp; deduplication</a></li>
+    <li><a href="#s2-2" class="toc-l2">2.2 Non-Functional</a></li>
+    <li><a href="#s2-2-1" class="toc-l3">Data freshness</a></li>
+    <li><a href="#s2-2-2" class="toc-l3">Decoupling</a></li>
+    <li><a href="#s2-2-3" class="toc-l3">Exactly-once</a></li>
+    <li><a href="#s2-2-4" class="toc-l3">Fault tolerance</a></li>
+    <li><a href="#s2-2-5" class="toc-l3">Write load control</a></li>
+    <li><a href="#s2-2-6" class="toc-l3">Scalability</a></li>
+    <li><a href="#s3">3. Solution Comparison</a></li>
+    <li><a href="#s3-1" class="toc-l2">3.1 Candidates</a></li>
+    <li><a href="#s3-2" class="toc-l2">3.2 Comparison table</a></li>
+    <li><a href="#s3-3" class="toc-l2">3.3 Decision</a></li>
+    <li><a href="#s4">4. Solution Architecture</a></li>
+    <li><a href="#s4-diag" class="toc-l2">C4 Diagrams</a></li>
+    <li><a href="#s4-1" class="toc-l2">4.1 Computation &amp; Storage</a></li>
+    <li><a href="#s4-1-1" class="toc-l3">Input stream contract</a></li>
+    <li><a href="#s4-1-2" class="toc-l3">Composite key design</a></li>
+    <li><a href="#s4-1-3" class="toc-l3">Business timestamp extractor</a></li>
+    <li><a href="#s4-1-4" class="toc-l3">Why no native windowing</a></li>
+    <li><a href="#s4-1-5" class="toc-l3">KPI accumulator</a></li>
+    <li><a href="#s4-1-6" class="toc-l3">Full topology</a></li>
+    <li><a href="#s4-1-7" class="toc-l3">Dual output topics</a></li>
+    <li><a href="#s4-1-8" class="toc-l3">Dirty key tracking pattern</a></li>
+    <li><a href="#s4-1-9" class="toc-l3">State store &amp; fault tolerance</a></li>
+    <li><a href="#s4-2" class="toc-l2">4.2 KPI Exposure</a></li>
+    <li><a href="#s4-2-1" class="toc-l3">Architecture overview</a></li>
+    <li><a href="#s4-2-2" class="toc-l3">Persistence consumer</a></li>
+    <li><a href="#s4-2-3" class="toc-l3">Idempotent upsert (MongoDB)</a></li>
+    <li><a href="#s4-2-4" class="toc-l3">REST query API</a></li>
+    <li><a href="#s4-2-5" class="toc-l3">Cross-POS consolidation</a></li>
+    <li><a href="#s4-2-6" class="toc-l3">MongoDB data model</a></li>
+    <li><a href="#s4-2-7" class="toc-l3">Future: push channel</a></li>
+    <li><a href="#s4-2-8" class="toc-l3">Exposure summary</a></li>
+  </ul>
+</nav>
+
+<!-- ── Main content ── -->
+<main class="page-content">
+
+<!-- ═══════════════════════════════════
+     SECTION 1
+════════════════════════════════════ -->
+<h1 id="s1"><span class="section-label">1</span>Business Context and Requirements</h1>
+
+<h2 id="s1-1">1.1 Operational Setting</h2>
+<p>This document studies the architecture of a real-time KPI computation system for a large-scale payment acquiring platform. The platform aggregates transaction flows from thousands of merchants, each operating one or more points of sale (POS). Transactions originate from payment processors, card scheme acquirers, and acceptance terminals, and are ingested as high-throughput event streams via Apache Kafka.</p>
+<p>The existing processing pipeline consumes raw transaction events from <code>payment.transaction.raw.v1</code>, performs reconciliation and correlation with reference data stored in MongoDB, and publishes fully enriched events onto <code>payment.transaction.enriched.v1</code>. The new KPI layer attaches to this enriched stream as an independent consumer group, without modifying any existing code.</p>
+
+<h2 id="s1-2">1.2 Business Need — KPI Catalogue</h2>
+<p>Merchants require near real-time visibility into their payment activity (<em>activité monétique</em>) through a dedicated monitoring dashboard. The following KPIs must be computed continuously, partitioned by point of sale, by currency, and by business day:</p>
+
+<table>
+  <thead><tr><th>KPI</th><th>Type</th><th>Definition</th></tr></thead>
+  <tbody>
+    <tr><td class="col-key">Total collected (gross)</td><td>Sum</td><td>Sum of all approved transaction amounts for the business day</td></tr>
+    <tr><td class="col-key">Total refunds</td><td>Sum</td><td>Sum of all refund amounts</td></tr>
+    <tr><td class="col-key">Net collected</td><td>Derived</td><td><code>gross_amount − refund_amount</code></td></tr>
+    <tr><td class="col-key">Transaction count</td><td>Count</td><td>Approved transactions (success_count), failed transactions (failed_count), total</td></tr>
+    <tr><td class="col-key">Average basket</td><td>Derived</td><td><code>gross_amount / success_count</code> — computed at read time from stored sufficients</td></tr>
+    <tr><td class="col-key">Failure rate</td><td>Derived</td><td><code>failed_count / total_count × 100</code></td></tr>
+    <tr><td class="col-key">Fraud indicators</td><td>Count + Sum</td><td>Fraud count, fraud amount (optional scope)</td></tr>
+    <tr><td class="col-key">Last event timestamp</td><td>Scalar</td><td>Business timestamp of the most recent processed event for this key</td></tr>
+  </tbody>
+</table>
+
+<div class="panel info">
+  <div class="panel-header">Design principle — statistical sufficients</div>
+  <div class="panel-body"><p>The accumulator stores only raw sums and counts (gross_amount, refund_amount, success_count, failed_count, total_count). Derived metrics (average basket, failure rate, net amount) are computed at read time. This ensures that any late-arriving event that increments the stored sufficients automatically produces a correct derived value without any special correction logic.</p></div>
+</div>
+
+<h2 id="s1-3">1.3 Architectural Starting Point</h2>
+<p>The platform already operates a Kafka Streams topology consuming <code>payment.transaction.raw.v1</code>. This pipeline performs event correlation, deduplication, and enrichment, then publishes canonical events onto <code>payment.transaction.enriched.v1</code>, partitioned by <code>merchant_id</code>. The new KPI computation layer must attach to this topic as an independent consumer group (<code>application.id: kpi-processor</code>) and must not introduce any dependency on, or modification to, the existing pipeline.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════
+     SECTION 2
+════════════════════════════════════ -->
+<h1 id="s2"><span class="section-label">2</span>Functional and Non-Functional Constraints</h1>
+
+<h2 id="s2-1">2.1 Functional Constraints</h2>
+
+<h3 id="s2-1-1">2.1.1 KPI Semantics — Simple Aggregates per POS, per Currency, per Business Day</h3>
+<p>KPIs are simple aggregates (sums, counts, derived ratios) scoped to a single <code>(store_id, business_date, currency)</code> triplet. This bounded scope has important architectural consequences: the state per key is compact and can be maintained in a local embedded store without cross-partition coordination. No complex event patterns, streaming joins, or ML inference are required at computation time.</p>
+
+<h3 id="s2-1-2">2.1.2 Business Timestamp vs. Ingestion Timestamp</h3>
+<p>Every enriched transaction carries a field <code>business_timestamp</code>, representing the moment the transaction was initiated at the terminal. This field is produced by the payment processor and embedded in the event body. All KPI aggregation — including the derivation of <code>business_date</code> for the composite key — must rely exclusively on <code>business_timestamp</code>, not on the Kafka record timestamp (which reflects ingestion time).</p>
+<div class="panel warning">
+  <div class="panel-header">Critical constraint — event time vs. processing time</div>
+  <div class="panel-body"><p>The lag between <code>business_timestamp</code> and Kafka ingestion time can range from seconds to <strong>several days</strong> in production, due to terminal offline operation, acquirer batch settlement windows, or network partitions. A transaction with <code>business_timestamp</code> of two days ago received today must be attributed to the KPI partition for that past business day, not to today.</p></div>
+</div>
+
+<h3 id="s2-1-3">2.1.3 Late Event Integration and Retroactive Correction</h3>
+<p>The system must accept late-arriving events — events whose <code>business_timestamp</code> falls on a past business day — and integrate them correctly into the corresponding historical KPI partition. There is no immutable window closure: the KPI state for any business day remains open and updatable for a configurable retention period (default: 90 days). When a past KPI accumulator is updated, a corrected snapshot is published on both output topics with an explicit <code>is_retroactive_correction: true</code> flag.</p>
+<div class="panel error">
+  <div class="panel-header">Why native Kafka Streams windowing cannot be used</div>
+  <div class="panel-body"><p>Kafka Streams <code>TimeWindows</code> and <code>WindowStore</code> close windows after a configurable grace period (typically minutes), after which late events are silently discarded. In a payment acquiring context, late arrivals from acquirer batch settlements or offline terminals routinely arrive hours or days late. Using native windowing would silently corrupt historical KPIs with no recovery path. The solution replaces windowing with an open <code>KeyValueStore</code> keyed by composite key, described in section 4.1.2.</p></div>
+</div>
+
+<h3 id="s2-1-4">2.1.4 Cross-POS Consolidation at Query Time</h3>
+<p>Merchants may own multiple POS terminals. The system must support on-demand aggregation of KPIs across all POS terminals belonging to a given merchant. This consolidation is performed at query time by the REST API, not pre-computed in the streaming layer. The API retrieves individual POS accumulators from the read model database and merges them, recomputing derived ratios from the merged sums and counts. No streaming-layer topology change is required to add this capability.</p>
+
+<h3 id="s2-1-5">2.1.5 Idempotency and Deduplication</h3>
+<p>The platform's Kafka producers operate with at-least-once delivery. The system must handle duplicate events and replay scenarios. Two complementary layers of protection are applied:</p>
+<ul>
+  <li><strong>Kafka EOS (exactly_once_v2):</strong> atomic offset commits and transactional producers prevent duplicate processing at the Kafka Streams layer for infrastructure-level redeliveries.</li>
+  <li><strong>Application-level deduplication:</strong> the accumulator maintains a <code>Set&lt;String&gt;</code> of already-processed <code>event_id</code> values. Any event whose <code>event_id</code> is already present in the set is silently dropped, protecting against upstream retry logic at the acquirer or processor level that is invisible to Kafka's EOS mechanism.</li>
+</ul>
+
+<h2 id="s2-2">2.2 Non-Functional Constraints</h2>
+
+<h3 id="s2-2-1">2.2.1 Data Freshness</h3>
+<p>In the initial scope, KPI data is served exclusively via REST polling against the MongoDB read model. The acceptable freshness target for dashboard queries is <strong>1 to 10 minutes</strong> — meaning the KPIs displayed reflect the state of transactions processed at most 10 minutes ago under normal operating conditions. This target is satisfied by the debounced sink pattern (Suppress operator, 5-minute silence window) described in section 4.1.8.</p>
+<div class="panel info">
+  <div class="panel-header">Future evolution — sub-second push channel</div>
+  <div class="panel-body"><p>A real-time push channel (WebSocket or Server-Sent Events) can be added in a later phase without any change to the Kafka Streams topology. The topic <code>kpi.store.day.current.v1</code> — already produced by the topology on every accumulator update — provides the raw material for a Push Service that would dispatch KPI snapshots to dashboard clients with latency under 2 seconds. Redis may be introduced at that stage as a lightweight session store for WebSocket connections, but is not needed in the current scope.</p></div>
+</div>
+
+<h3 id="s2-2-2">2.2.2 Decoupling from the Primary Processing Pipeline</h3>
+<ul>
+  <li><strong>Independent consumer group:</strong> <code>kpi-processor</code> maintains its own committed offsets on <code>payment.transaction.enriched.v1</code>, with no dependency on the reconciliation pipeline's offsets.</li>
+  <li><strong>No shared state:</strong> the two topologies share no state store, changelog topic, or application instance.</li>
+  <li><strong>Failure isolation:</strong> a failure, rebalance, or restart in the KPI topology has no impact on the reconciliation pipeline, and vice versa.</li>
+  <li><strong>No upstream modifications:</strong> the existing pipeline code is not changed. The KPI layer is additive only.</li>
+</ul>
+
+<h3 id="s2-2-3">2.2.3 Exactly-Once Semantics</h3>
+<p>The KPI Streams Processor is configured with <code>processing.guarantee=exactly_once_v2</code>. This ensures that each event impacts KPI aggregates exactly once at the infrastructure level. Combined with application-level <code>event_id</code> deduplication, the system provides the strongest available correctness guarantee: no double-counting, no data loss, even under failure and replay conditions.</p>
+
+<h3 id="s2-2-4">2.2.4 Fault Tolerance and State Recovery</h3>
+<p>The KPI <code>KeyValueStore</code> (RocksDB) is continuously backed up to a Kafka changelog topic (<code>kpi-processor-kpi-store-pos-date-changelog</code>). On instance failure or restart, the recovering instance replays its changelog to rebuild local state without reprocessing the full transaction history. Recovery time is proportional to state changes since the last checkpoint, not to total transaction volume. The changelog topic must be retained for at least the same duration as the KPI store retention period (90 days).</p>
+
+<h3 id="s2-2-5">2.2.5 Write Load Control on the Exposure Database</h3>
+<p>Without throttling, each transaction event would trigger an accumulator update that would propagate as a database write — unsustainable at scale. The system applies a <strong>Dirty Key Tracking / Debounced Sink</strong> pattern: the KTable output is passed through a <code>Suppressed.untilTimeLimit()</code> operator that absorbs intermediate updates per key and emits only the latest accumulated value after a configurable silence window (default: 5 minutes). This reduces database write load by a factor equal to the average number of transactions per POS per throttle window.</p>
+
+<h3 id="s2-2-6">2.2.6 Scalability</h3>
+<p>Scalability is achieved by increasing the number of partitions on <code>payment.transaction.enriched.v1</code> and deploying additional Kafka Streams instances. Each instance processes a disjoint set of partitions with a fully independent local state store — no cross-instance coordination is required for KPI computation. The partition key must be <code>store_id</code> (or <code>merchant_id</code>) to guarantee that all events for a given point of sale land on the same partition and are processed by the same instance, enabling correct local aggregation.</p>
+
+<hr/>
+
+<!-- ═══════════════════════════════════
+     SECTION 3
+════════════════════════════════════ -->
+<h1 id="s3"><span class="section-label">3</span>Solution Comparison: Streaming vs. Materialized Views</h1>
+
+<h2 id="s3-1">3.1 Candidate Approaches</h2>
+
+<div class="panel tip">
+  <div class="panel-header">Option A — Stream Processing (Kafka Streams) <span class="status green">SELECTED</span></div>
+  <div class="panel-body"><p>KPIs are computed incrementally as each enriched transaction event is consumed. An embedded RocksDB state store maintains a running accumulator per <code>(store_id, business_date, currency)</code> composite key. Two output topics are produced: a full-fidelity topic for real-time push, and a debounced topic for database persistence. The read model database is updated via a batch persistence consumer, decoupled from the streaming computation.</p></div>
+</div>
+
+<div class="panel tip">
+  <div class="panel-header">Option B — Materialized Views over MongoDB</div>
+  <div class="panel-body"><p>Enriched transactions are written to MongoDB by the existing reconciliation pipeline. KPIs are computed by executing <code>$group</code> / <code>$sum</code> / <code>$avg</code> aggregation pipelines over the transactions collection. Results are stored in a separate KPI collection refreshed periodically (scheduled job or Change Stream trigger).</p></div>
+</div>
+
+<h2 id="s3-2">3.2 Detailed Comparison</h2>
+<table>
+  <thead><tr><th>Criterion</th><th>Option A — Kafka Streams</th><th>Option B — Materialized Views</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="col-key">Latency (push channel)</td>
+      <td><span class="tag-good">GOOD</span> Sub-second per event, no refresh cycle</td>
+      <td><span class="tag-med">MEDIUM</span> Bounded by refresh interval (15–60 s)</td>
+    </tr>
+    <tr>
+      <td class="col-key">Late event handling</td>
+      <td><span class="tag-good">GOOD</span> Open KeyValueStore integrates late events for 90 days, no window closure</td>
+      <td><span class="tag-bad">POOR</span> Late events included only if view is re-evaluated; boundary inconsistencies</td>
+    </tr>
+    <tr>
+      <td class="col-key">Retroactive correction</td>
+      <td><span class="tag-good">GOOD</span> Transparent — any event updates the correct composite key; corrected snapshot auto-published</td>
+      <td><span class="tag-bad">POOR</span> Requires re-running the aggregation pipeline for the affected date range</td>
+    </tr>
+    <tr>
+      <td class="col-key">Decoupling from main pipeline</td>
+      <td><span class="tag-good">GOOD</span> Independent consumer group; zero shared state with reconciliation topology</td>
+      <td><span class="tag-bad">POOR</span> Tightly coupled to MongoDB write throughput and replication lag</td>
+    </tr>
+    <tr>
+      <td class="col-key">Exactly-once</td>
+      <td><span class="tag-good">GOOD</span> EOS v2 + application-level event_id deduplication</td>
+      <td><span class="tag-bad">POOR</span> Not guaranteed near refresh window boundaries</td>
+    </tr>
+    <tr>
+      <td class="col-key">Write load on DB</td>
+      <td><span class="tag-good">GOOD</span> Coalesced via Suppress debounce; N tx → 1 DB write per throttle window</td>
+      <td><span class="tag-bad">POOR</span> Re-aggregation scans full collection; high read + write load</td>
+    </tr>
+    <tr>
+      <td class="col-key">Fault tolerance</td>
+      <td><span class="tag-good">GOOD</span> RocksDB + Kafka changelog; automatic state recovery without full replay</td>
+      <td><span class="tag-med">MEDIUM</span> Full re-aggregation needed if materialized view is lost</td>
+    </tr>
+    <tr>
+      <td class="col-key">Scalability</td>
+      <td><span class="tag-good">GOOD</span> Linear: add partitions and Streams instances; no cross-instance coordination</td>
+      <td><span class="tag-med">MEDIUM</span> Limited by MongoDB aggregation throughput and index efficiency</td>
+    </tr>
+    <tr>
+      <td class="col-key">Cross-POS consolidation</td>
+      <td><span class="tag-good">GOOD</span> At query time over the read model; no streaming layer change needed</td>
+      <td><span class="tag-good">GOOD</span> At query time over the KPI collection; equivalent complexity</td>
+    </tr>
+    <tr>
+      <td class="col-key">Operational complexity</td>
+      <td><span class="tag-med">MEDIUM</span> Kafka Streams app, RocksDB, changelog, persistence consumer, read model DB</td>
+      <td><span class="tag-med">MEDIUM</span> Aggregation pipeline, refresh scheduler, Change Stream consumer</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="s3-3">3.3 Decision</h2>
+<div class="decision-box">
+  <strong>Selected approach: Option A — Apache Kafka Streams</strong>
+  <ol>
+    <li><strong>Data freshness:</strong> sub-second updates on the real-time channel satisfy the push SLA without compromise; the debounced channel satisfies the DB persistence SLA (1–10 min).</li>
+    <li><strong>Late event correctness:</strong> the open KeyValueStore keyed by <code>(store_id|business_date|currency)</code> handles retroactive corrections natively for up to 90 days — impossible with native windowing or materialized views.</li>
+    <li><strong>Write load control:</strong> the Dirty Key Tracking / Debounced Sink pattern (Suppress operator) reduces DB write amplification by an order of magnitude at peak load.</li>
+    <li><strong>Decoupling:</strong> the KPI topology is a pure reader of the enriched topic; it shares no resources with the reconciliation pipeline.</li>
+    <li><strong>Exactly-once:</strong> EOS v2 combined with application-level event_id deduplication provides the strongest available correctness guarantee.</li>
+    <li><strong>Infrastructure reuse:</strong> the solution builds entirely on the existing Kafka infrastructure; no new compute technology is required.</li>
+  </ol>
+</div>
+
+<hr/>
+
+<!-- ═══════════════════════════════════
+     SECTION 4
+════════════════════════════════════ -->
+<h1 id="s4"><span class="section-label">4</span>Solution Architecture — Apache Kafka Streams</h1>
+<p>The solution is organized into two subsystems: the <strong>KPI computation and storage layer</strong> (Kafka Streams topology, RocksDB state stores, output topics) and the <strong>KPI exposure layer</strong> (persistence consumer, MongoDB read model, REST API). In the initial scope, dashboards query KPIs via REST polling against MongoDB. A real-time push channel is identified as a future evolution and described in section 4.2.7.</p>
+
+<!-- C4 Diagrams -->
+<h2 id="s4-diag">C4 Architecture Diagrams</h2>
+<p>The three diagrams below describe the architecture at the Context, Container, and Component levels of the C4 model. Each is provided as a <code>.drawio</code> file to be imported via the Draw.io macro in Confluence (<em>Insert → Other macros → Draw.io Diagrams → Embed from file</em>).</p>
+
+<div class="drawio-macro">
+  <div class="drawio-macro-header">Draw.io — <strong>c4_level1_context.drawio</strong></div>
+  <div class="drawio-placeholder">
+    <strong>C4 Level 1 — System Context</strong>
+    <span>Import <code>c4_level1_context.drawio</code> via Draw.io macro</span>
+    <span>Actors: Merchant, Platform Operator · Systems: KPI Platform, Payment Processors, Fraud Engine, Transaction Pipeline, Dashboard</span>
+  </div>
+  <div class="drawio-caption">Figure 1 — C4 Level 1: the Real-Time KPI Platform in its external context.</div>
+</div>
+
+<div class="drawio-macro">
+  <div class="drawio-macro-header">Draw.io — <strong>c4_level2_container.drawio</strong></div>
+  <div class="drawio-placeholder">
+    <strong>C4 Level 2 — Container Diagram</strong>
+    <span>Import <code>c4_level2_container.drawio</code> via Draw.io macro</span>
+    <span>Containers: KPI Streams Processor · RocksDB · Kafka (enriched / current / snapshot / changelog) · Persistence Consumer · MongoDB KPI Store · API Gateway · KPI Query Service · Dashboard</span>
+  </div>
+  <div class="drawio-caption">Figure 2 — C4 Level 2: all containers within the KPI Platform and their interactions.</div>
+</div>
+
+<div class="drawio-macro">
+  <div class="drawio-macro-header">Draw.io — <strong>c4_level3_component.drawio</strong></div>
+  <div class="drawio-placeholder">
+    <strong>C4 Level 3 — Component Diagram (KPI Streams Processor)</strong>
+    <span>Import <code>c4_level3_component.drawio</code> via Draw.io macro</span>
+    <span>Components: Source Node · EventTimeExtractor · Filter · ReKey · Aggregate (PosKpiAccumulator) · Suppress (Debounce) · Snapshot Mapper · Dual Sink Nodes</span>
+  </div>
+  <div class="drawio-caption">Figure 3 — C4 Level 3: internal topology of the KPI Streams Processor container.</div>
+</div>
+
+<!-- ══════════════════════════════
+     4.1 Computation & Storage
+═══════════════════════════════ -->
+<h2 id="s4-1">4.1 KPI Computation and Storage</h2>
+
+<h3 id="s4-1-1">4.1.1 Input Stream Contract</h3>
+<p>The topology consumes <code>payment.transaction.enriched.v1</code>, partitioned by <code>store_id</code>. The following fields are required:</p>
+<div class="code-macro">
+  <div class="code-macro-header"><span>JSON — payment.transaction.enriched.v1 payload</span></div>
+  <div class="code-macro-body"><pre>{
+  <span class="st">"event_id"</span>:            <span class="st">"evt-abc123"</span>,        <span class="cm">// globally unique — used for deduplication</span>
+  <span class="st">"store_id"</span>:            <span class="st">"pos-789"</span>,           <span class="cm">// point of sale identifier (= partition key)</span>
+  <span class="st">"merchant_id"</span>:         <span class="st">"merchant-456"</span>,
+  <span class="st">"business_timestamp"</span>:  <span class="st">"2024-03-15T09:32:11.000Z"</span>, <span class="cm">// BUSINESS time from payload</span>
+  <span class="st">"amount_cents"</span>:        <span class="nm">4250</span>,               <span class="cm">// integer — avoids float precision issues</span>
+  <span class="st">"currency"</span>:            <span class="st">"EUR"</span>,
+  <span class="st">"status"</span>:              <span class="st">"APPROVED"</span>,         <span class="cm">// APPROVED | DECLINED | ERROR | REFUND</span>
+  <span class="st">"event_type"</span>:          <span class="st">"PAYMENT"</span>,          <span class="cm">// PAYMENT | REFUND</span>
+  <span class="st">"is_fraud"</span>:            <span class="kw">false</span>
+}</pre>
+  </div>
+</div>
+
+<h3 id="s4-1-2">4.1.2 Composite Key Design — Open Partitions Instead of Windows</h3>
+<p>Rather than using Kafka Streams native windowing (whose window closure discards late events), the topology re-keys each event using a composite key that encodes the point of sale, the business date extracted from <code>business_timestamp</code>, and the currency. The <code>KeyValueStore</code> then acts as an open dictionary — any event with any past business date updates the correct accumulator without any window closing.</p>
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — composite key derivation</span></div>
+  <div class="code-macro-body"><pre><span class="cl">KStream</span>&lt;<span class="cl">String</span>, <span class="cl">EnrichedTransaction</span>&gt; rekeyed = valid
+    .selectKey((oldKey, tx) -&gt; {
+        <span class="cm">// Business date from the PAYLOAD field — never from system clock or Kafka timestamp</span>
+        <span class="cl">LocalDate</span> businessDate = tx.getBusinessTimestamp()
+            .atZone(<span class="cl">ZoneOffset</span>.UTC)
+            .toLocalDate();
+
+        <span class="cm">// Composite key: store_id|YYYY-MM-DD|currency</span>
+        <span class="cm">// Example: "pos-789|2024-03-14|EUR"</span>
+        <span class="kw">return</span> tx.getStoreId() + <span class="st">"|"</span> + businessDate + <span class="st">"|"</span> + tx.getCurrency();
+    });</pre>
+  </div>
+</div>
+
+<div class="panel info">
+  <div class="panel-header">Why currency is part of the key</div>
+  <div class="panel-body"><p>An acquiring platform processing multi-currency merchants must avoid mixing amounts from different currencies in the same accumulator. Including <code>currency</code> in the composite key ensures that each sum and count is always currency-homogeneous. Cross-POS consolidation at query time only merges accumulators with the same currency, or performs conversion explicitly.</p></div>
+</div>
+
+<h3 id="s4-1-3">4.1.3 Business Timestamp Extractor</h3>
+<p>A custom <code>TimestampExtractor</code> reads <code>business_timestamp</code> from the event payload, ensuring that all temporal logic within the topology operates on business time:</p>
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — TransactionEventTimeExtractor</span></div>
+  <div class="code-macro-body"><pre><span class="kw">public class</span> <span class="cl">TransactionEventTimeExtractor</span> <span class="kw">implements</span> <span class="cl">TimestampExtractor</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public long</span> extract(<span class="cl">ConsumerRecord</span>&lt;<span class="cl">Object</span>, <span class="cl">Object</span>&gt; record, <span class="kw">long</span> partitionTime) {
+        <span class="kw">if</span> (record.value() <span class="kw">instanceof</span> <span class="cl">EnrichedTransaction</span> tx
+                &amp;&amp; tx.getBusinessTimestamp() != <span class="kw">null</span>) {
+            <span class="kw">return</span> tx.getBusinessTimestamp().toEpochMilli();
+        }
+        <span class="kw">return</span> partitionTime; <span class="cm">// fallback: Kafka record timestamp</span>
+    }
+}</pre>
+  </div>
+</div>
+
+<h3 id="s4-1-4">4.1.4 Why Native Windowing Is Not Used</h3>
+<p>Kafka Streams <code>TimeWindows</code> and <code>WindowStore</code> operate by closing windows after a configurable grace period. Any event arriving after the window is closed is silently discarded. In a payment acquiring context, this is unacceptable:</p>
+<ul>
+  <li>Acquirer batch settlements may arrive 12–48 hours after the business day</li>
+  <li>Offline terminals reconnecting may submit transactions from the previous day</li>
+  <li>Network incidents at a processor may delay a batch of events by days</li>
+</ul>
+<p>The open <code>KeyValueStore</code> approach replaces temporal windowing with key-space partitioning: the business date is part of the composite key rather than a window boundary, so the "window" never closes as long as the key exists in the store (up to the 90-day retention limit).</p>
+
+<h3 id="s4-1-5">4.1.5 KPI Accumulator — Statistical Sufficients and Idempotence</h3>
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — PosKpiAccumulator</span></div>
+  <div class="code-macro-body"><pre><span class="kw">public class</span> <span class="cl">PosKpiAccumulator</span> {
+
+    <span class="cm">// ── Statistical sufficients ───────────────────────────────────────────</span>
+    <span class="kw">private long</span> grossAmountCents   = <span class="nm">0L</span>;   <span class="cm">// sum of APPROVED amounts</span>
+    <span class="kw">private long</span> refundAmountCents  = <span class="nm">0L</span>;   <span class="cm">// sum of REFUND amounts</span>
+    <span class="kw">private long</span> successCount       = <span class="nm">0L</span>;   <span class="cm">// APPROVED count</span>
+    <span class="kw">private long</span> failedCount        = <span class="nm">0L</span>;   <span class="cm">// DECLINED + ERROR count</span>
+    <span class="kw">private long</span> totalCount         = <span class="nm">0L</span>;   <span class="cm">// all events</span>
+    <span class="kw">private long</span> fraudCount         = <span class="nm">0L</span>;
+    <span class="kw">private long</span> fraudAmountCents   = <span class="nm">0L</span>;
+    <span class="kw">private</span> <span class="cl">Instant</span> lastEventTimestamp;
+
+    <span class="cm">// ── Application-level deduplication ──────────────────────────────────</span>
+    <span class="cm">// Protects against at-least-once redelivery AND upstream acquirer retries</span>
+    <span class="kw">private</span> <span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; processedEventIds = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;();
+
+    <span class="kw">public</span> <span class="cl">PosKpiAccumulator</span> update(<span class="cl">EnrichedTransaction</span> tx) {
+        <span class="kw">if</span> (!processedEventIds.add(tx.getEventId())) {
+            <span class="kw">return this</span>; <span class="cm">// idempotence gate — already processed</span>
+        }
+        totalCount++;
+        <span class="kw">switch</span> (tx.getEventType()) {
+            <span class="kw">case</span> <span class="st">"PAYMENT"</span> -&gt; {
+                <span class="kw">switch</span> (tx.getStatus()) {
+                    <span class="kw">case</span> <span class="st">"APPROVED"</span> -&gt; { grossAmountCents += tx.getAmountCents(); successCount++; }
+                    <span class="kw">case</span> <span class="st">"DECLINED"</span>, <span class="st">"ERROR"</span> -&gt; failedCount++;
+                }
+            }
+            <span class="kw">case</span> <span class="st">"REFUND"</span> -&gt; refundAmountCents += tx.getAmountCents();
+        }
+        <span class="kw">if</span> (tx.isFraud()) { fraudCount++; fraudAmountCents += tx.getAmountCents(); }
+        lastEventTimestamp = tx.getBusinessTimestamp();
+        <span class="kw">return this</span>;
+    }
+
+    <span class="kw">public</span> <span class="cl">KpiSnapshot</span> toSnapshot(<span class="cl">String</span> storeId, <span class="cl">LocalDate</span> date, <span class="cl">String</span> currency) {
+        <span class="cm">// Derived metrics computed at read time — correct by construction for late arrivals</span>
+        <span class="kw">long</span> netAmountCents = grossAmountCents - refundAmountCents;
+        <span class="kw">double</span> avgBasket = successCount &gt; <span class="nm">0</span> ? (<span class="kw">double</span>) grossAmountCents / successCount : <span class="nm">0.0</span>;
+        <span class="kw">double</span> failureRate = totalCount &gt; <span class="nm">0</span> ? failedCount * <span class="nm">100.0</span> / totalCount : <span class="nm">0.0</span>;
+
+        <span class="kw">return</span> <span class="cl">KpiSnapshot</span>.builder()
+            .storeId(storeId).businessDate(date).currency(currency)
+            .grossAmountEuros(grossAmountCents / <span class="nm">100.0</span>)
+            .refundAmountEuros(refundAmountCents / <span class="nm">100.0</span>)
+            .netAmountEuros(netAmountCents / <span class="nm">100.0</span>)
+            .successCount(successCount).failedCount(failedCount).totalCount(totalCount)
+            .avgBasketEuros(avgBasket / <span class="nm">100.0</span>)
+            .failureRatePct(failureRate)
+            .fraudCount(fraudCount)
+            .lastEventTimestamp(lastEventTimestamp)
+            .build();
+    }
+}</pre>
+  </div>
+</div>
+
+<h3 id="s4-1-6">4.1.6 Full Topology Assembly</h3>
+<div class="flow-block">
+  <span class="label">payment.transaction.enriched.v1</span><br/>
+  &nbsp;&nbsp;<span class="arrow">→</span> <strong>Filter</strong> (drop events with null store_id or business_timestamp)<br/>
+  &nbsp;&nbsp;<span class="arrow">→</span> <strong>TransactionEventTimeExtractor</strong> (read business_timestamp from payload)<br/>
+  &nbsp;&nbsp;<span class="arrow">→</span> <strong>selectKey</strong> (composite key: store_id|business_date|currency)<br/>
+  &nbsp;&nbsp;<span class="arrow">→</span> <strong>groupByKey</strong> (triggers repartition on composite key)<br/>
+  &nbsp;&nbsp;<span class="arrow">→</span> <strong>aggregate</strong> (PosKpiAccumulator, KeyValueStore: kpi-store-pos-date, retention 90d)<br/>
+  &nbsp;&nbsp;<span class="arrow">→</span> [KTable branching]<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">→</span> <strong>toStream().map(toSnapshot)</strong> <span class="label">→ kpi.store.day.current.v1</span> (real-time push)<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">→</span> <strong>suppress(untilTimeLimit 5 min)</strong> <span class="arrow">→</span> <strong>toStream().map(toSnapshot)</strong> <span class="label">→ kpi.store.day.snapshot.v1</span> (DB persistence)
+</div>
+
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — Kafka Streams topology (full)</span></div>
+  <div class="code-macro-body"><pre><span class="cl">StreamsBuilder</span> builder = <span class="kw">new</span> <span class="cl">StreamsBuilder</span>();
+
+<span class="cl">KStream</span>&lt;<span class="cl">String</span>, <span class="cl">EnrichedTransaction</span>&gt; txStream = builder.stream(
+    <span class="st">"payment.transaction.enriched.v1"</span>,
+    <span class="cl">Consumed</span>.with(<span class="cl">Serdes</span>.String(), enrichedTxSerde)
+             .withTimestampExtractor(<span class="kw">new</span> <span class="cl">TransactionEventTimeExtractor</span>()));
+
+<span class="cl">KStream</span>&lt;<span class="cl">String</span>, <span class="cl">EnrichedTransaction</span>&gt; valid = txStream
+    .filter((k, tx) -&gt; tx.getStoreId() != <span class="kw">null</span>
+                    &amp;&amp; tx.getBusinessTimestamp() != <span class="kw">null</span>
+                    &amp;&amp; tx.getCurrency() != <span class="kw">null</span>);
+
+<span class="cl">KStream</span>&lt;<span class="cl">String</span>, <span class="cl">EnrichedTransaction</span>&gt; rekeyed = valid
+    .selectKey((k, tx) -&gt; tx.getStoreId() + <span class="st">"|"</span>
+        + tx.getBusinessTimestamp().atZone(<span class="cl">ZoneOffset</span>.UTC).toLocalDate()
+        + <span class="st">"|"</span> + tx.getCurrency());
+
+<span class="cl">KTable</span>&lt;<span class="cl">String</span>, <span class="cl">PosKpiAccumulator</span>&gt; kpiTable = rekeyed
+    .groupByKey(<span class="cl">Grouped</span>.with(<span class="cl">Serdes</span>.String(), enrichedTxSerde))
+    .aggregate(
+        <span class="cl">PosKpiAccumulator</span>::<span class="kw">new</span>,
+        (key, tx, acc) -&gt; acc.update(tx),
+        <span class="cl">Materialized</span>
+            .&lt;<span class="cl">String</span>, <span class="cl">PosKpiAccumulator</span>, <span class="cl">KeyValueStore</span>&lt;<span class="cl">Bytes</span>, <span class="kw">byte</span>[]&gt;&gt;
+            as(<span class="st">"kpi-store-pos-date"</span>)
+            .withKeySerde(<span class="cl">Serdes</span>.String())
+            .withValueSerde(accumulatorSerde)
+            .withRetention(<span class="cl">Duration</span>.ofDays(<span class="nm">90</span>)));
+
+<span class="cm">// ── Branch 1: real-time push (no throttle) ────────────────────────────</span>
+kpiTable.toStream()
+    .map((key, acc) -&gt; toSnapshotRecord(key, acc, <span class="kw">false</span>))
+    .to(<span class="st">"kpi.store.day.current.v1"</span>,
+        <span class="cl">Produced</span>.with(<span class="cl">Serdes</span>.String(), snapshotSerde));
+
+<span class="cm">// ── Branch 2: debounced DB persistence (Dirty Key Tracking pattern) ───</span>
+kpiTable
+    .suppress(
+        <span class="cl">Suppressed</span>.untilTimeLimit(
+            <span class="cl">Duration</span>.ofMinutes(<span class="nm">5</span>),
+            <span class="cl">BufferConfig</span>.maxBytes(<span class="nm">50</span> * <span class="nm">1024</span> * <span class="nm">1024L</span>)  <span class="cm">// 50 MB spill cap</span>
+                .withLoggingEnabled(<span class="cl">Map</span>.of(
+                    <span class="st">"retention.ms"</span>, <span class="cl">String</span>.valueOf(<span class="cl">Duration</span>.ofHours(<span class="nm">2</span>).toMillis())))))
+    .toStream()
+    .map((key, acc) -&gt; toSnapshotRecord(key, acc, <span class="kw">true</span>))  <span class="cm">// marks as snapshot</span>
+    .to(<span class="st">"kpi.store.day.snapshot.v1"</span>,
+        <span class="cl">Produced</span>.with(<span class="cl">Serdes</span>.String(), snapshotSerde));</pre>
+  </div>
+</div>
+
+<h3 id="s4-1-7">4.1.7 Dual Output Topics</h3>
+<table>
+  <thead><tr><th>Topic</th><th>Cleanup policy</th><th>Purpose</th><th>Consumer</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>kpi.store.day.current.v1</code></td>
+      <td>Compacted</td>
+      <td>Latest snapshot per key — system of record for current KPIs in the Kafka layer. Each new message for a key replaces the previous one (log compaction).</td>
+      <td>Reserved for future Push Service (WebSocket / SSE) — not consumed in initial scope</td>
+    </tr>
+    <tr>
+      <td><code>kpi.store.day.snapshot.v1</code></td>
+      <td>Delete (7 days)</td>
+      <td>Throttled snapshots emitted by the Suppress operator. Drives DB persistence at controlled write rate.</td>
+      <td>Persistence Consumer → Read Model DB</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="panel note">
+  <div class="panel-header">Topic compaction on kpi.store.day.current.v1</div>
+  <div class="panel-body"><p>Log compaction ensures that for each composite key (<code>store_id|date|currency</code>), only the latest KPI snapshot is retained in the topic. This makes the topic usable as a lightweight system of record for bootstrapping new consumers (e.g., a new dashboard instance) without reprocessing the full transaction history.</p></div>
+</div>
+
+<h3 id="s4-1-8">4.1.8 Dirty Key Tracking Pattern — Throttle Mechanism Detail</h3>
+<p>The <strong>Dirty Key Tracking</strong> pattern is the conceptual name for the mechanism implemented by <code>Suppressed.untilTimeLimit()</code>. The name comes from the idea that a key is "dirty" (has unsaved changes) from the moment its accumulator is updated until its value is emitted downstream. Kafka Streams' Suppress operator implements this efficiently:</p>
+<ul>
+  <li>An in-memory buffer (backed by RocksDB if <code>maxBytes</code> is exceeded) holds the latest value per dirty key.</li>
+  <li>A key is emitted (flushed) only when no new update has been received for that key for the configured silence window (5 minutes by default).</li>
+  <li>If the buffer reaches its size cap before the silence window expires, the oldest dirty key is emitted early (spill-to-disk behaviour).</li>
+  <li>The result: N transaction events per POS per silence window → exactly 1 emission to <code>kpi.store.day.snapshot.v1</code> → 1 DB upsert.</li>
+</ul>
+
+<table>
+  <thead><tr><th>Silence window</th><th>Buffer cap</th><th>DB write rate (10K POS)</th><th>Freshness SLA</th></tr></thead>
+  <tbody>
+    <tr><td>1 minute</td><td>20 MB</td><td>~10 000 upserts/min</td><td>&lt; 1 min</td></tr>
+    <tr><td>5 minutes</td><td>50 MB</td><td>~2 000 upserts/min</td><td>&lt; 5 min</td></tr>
+    <tr><td>10 minutes</td><td>100 MB</td><td>~1 000 upserts/min</td><td>&lt; 10 min</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s4-1-9">4.1.9 State Store and Fault Tolerance Configuration</h3>
+<table>
+  <thead><tr><th>Parameter</th><th>Value</th><th>Rationale</th></tr></thead>
+  <tbody>
+    <tr><td><code>processing.guarantee</code></td><td><code>exactly_once_v2</code></td><td>Atomic offset commit + transactional producer</td></tr>
+    <tr><td><code>commit.interval.ms</code></td><td><code>500</code></td><td>Controls KTable emit frequency; also bounds push latency when future push channel is active</td></tr>
+    <tr><td><code>num.stream.threads</code></td><td>= partitions / instances</td><td>One thread per assigned partition</td></tr>
+    <tr><td><code>state.dir</code></td><td><code>/var/lib/kafka-streams</code></td><td>RocksDB persistent volume — survives restarts</td></tr>
+    <tr><td>Changelog <code>replication.factor</code></td><td><code>3</code></td><td>HA for state recovery</td></tr>
+    <tr><td>Changelog <code>retention.ms</code></td><td><code>7 776 000 000</code> (90 days)</td><td>Aligned with store retention</td></tr>
+    <tr><td><code>withRetention</code> (KeyValueStore)</td><td><code>Duration.ofDays(90)</code></td><td>KPI late-correction window</td></tr>
+  </tbody>
+</table>
+
+<!-- ══════════════════════════════
+     4.2 KPI Exposure
+═══════════════════════════════ -->
+<h2 id="s4-2">4.2 KPI Exposure for the Frontend Dashboard</h2>
+<p>In the initial scope, the exposure layer is based exclusively on REST polling: dashboards query MongoDB on demand, and the REST API has no dependency on the Kafka Streams application lifecycle. A real-time push channel (WebSocket / SSE) is designed as a future evolution, described in section 4.2.7, and is already prepared for at the topology level through the <code>kpi.store.day.current.v1</code> topic.</p>
+
+<h3 id="s4-2-1">4.2.1 Architecture Overview</h3>
+<p>In the initial scope, the exposure layer is deliberately simple: a single persistence consumer writes KPI snapshots to MongoDB, and a stateless REST API reads directly from it. There is no cache layer, no push mechanism, and no dependency on the Kafka Streams application at query time.</p>
+<ul>
+  <li><strong>Persistence Consumer:</strong> a Kafka consumer subscribed to <code>kpi.store.day.snapshot.v1</code> that performs batch idempotent upserts into MongoDB. Kafka offsets are committed only after successful DB writes, ensuring at-least-once delivery into the store.</li>
+  <li><strong>MongoDB KPI Store:</strong> the read model collection <code>kpi_snapshots</code>, optimized for point lookups and range queries by <code>(store_id, business_date, currency)</code>. It is not the source of truth — the compacted Kafka topic <code>kpi.store.day.current.v1</code> holds that role — but it is the sole read target for the API in this phase.</li>
+  <li><strong>KPI Query Service:</strong> a stateless REST API reading directly from MongoDB. No dependency on Kafka Streams, no Interactive Query API routing, no cache layer.</li>
+  <li><strong>API Gateway:</strong> routes authenticated merchant requests, enforces tenant isolation and POS-level access control.</li>
+</ul>
+<div class="panel info">
+  <div class="panel-header">Why MongoDB for the KPI read model</div>
+  <div class="panel-body"><p>MongoDB is already the persistence layer for the enriched transaction store used by the reconciliation pipeline. Reusing it for the KPI read model avoids introducing a new database technology. The document model maps naturally to the KPI snapshot structure (one document per <code>store_id|business_date|currency</code> composite key), and MongoDB's <code>updateOne</code> with <code>upsert: true</code> and a <code>$lt computed_at</code> filter natively supports the idempotent versioned-write pattern required by the persistence consumer.</p></div>
+</div>
+
+<h3 id="s4-2-2">4.2.2 Persistence Consumer — Batch Upsert into MongoDB</h3>
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — KpiPersistenceConsumer (batch listener)</span></div>
+  <div class="code-macro-body"><pre><span class="an">@KafkaListener</span>(
+    topics = <span class="st">"kpi.store.day.snapshot.v1"</span>,
+    groupId = <span class="st">"kpi-persistence"</span>,
+    containerFactory = <span class="st">"batchListenerFactory"</span>
+)
+<span class="kw">public void</span> persistBatch(<span class="cl">List</span>&lt;<span class="cl">ConsumerRecord</span>&lt;<span class="cl">String</span>, <span class="cl">KpiSnapshot</span>&gt;&gt; records,
+                         <span class="cl">Acknowledgment</span> ack) {
+    <span class="cm">// Intra-batch dedup: keep only the most recent snapshot per composite key</span>
+    <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">KpiSnapshot</span>&gt; deduped = records.stream()
+        .collect(<span class="cl">Collectors</span>.toMap(
+            <span class="cl">ConsumerRecord</span>::key,
+            <span class="cl">ConsumerRecord</span>::value,
+            (a, b) -&gt; a.getComputedAt().isAfter(b.getComputedAt()) ? a : b));
+
+    <span class="cm">// Idempotent upsert batch into MongoDB</span>
+    <span class="cm">// Each operation is versioned by computedAt (see section 4.2.3)</span>
+    kpiRepository.upsertBatch(new ArrayList&lt;&gt;(deduped.values()));
+
+    ack.acknowledge(); <span class="cm">// manual commit AFTER successful MongoDB write</span>
+}</pre>
+  </div>
+</div>
+
+<h3 id="s4-2-3">4.2.3 Idempotent Upsert — MongoDB (Versioned by computedAt)</h3>
+<p>Each upsert operation uses a filter that guards against regressing a more recent snapshot. If the document in MongoDB was written with a <code>computed_at</code> already newer than the incoming snapshot (e.g., due to a Kafka consumer replay), the update is a no-op — the stored value is not overwritten.</p>
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — MongoDB idempotent upsert via Spring Data</span></div>
+  <div class="code-macro-body"><pre><span class="kw">public void</span> upsertBatch(<span class="cl">List</span>&lt;<span class="cl">KpiSnapshot</span>&gt; snapshots) {
+    <span class="cl">List</span>&lt;<span class="cl">WriteModel</span>&lt;<span class="cl">Document</span>&gt;&gt; ops = snapshots.stream()
+        .map(snap -&gt; {
+            <span class="cl">Document</span> filter = <span class="kw">new</span> <span class="cl">Document</span>()
+                .append(<span class="st">"store_id"</span>,      snap.getStoreId())
+                .append(<span class="st">"business_date"</span>, snap.getBusinessDate().toString())
+                .append(<span class="st">"currency"</span>,      snap.getCurrency())
+                <span class="cm">// Guard: only update if incoming snapshot is strictly newer</span>
+                .append(<span class="st">"computed_at"</span>,   <span class="kw">new</span> <span class="cl">Document</span>(<span class="st">"$lt"</span>, snap.getComputedAt()));
+
+            <span class="cl">Document</span> update = <span class="kw">new</span> <span class="cl">Document</span>(<span class="st">"$set"</span>, <span class="kw">new</span> <span class="cl">Document</span>()
+                .append(<span class="st">"merchant_id"</span>,          snap.getMerchantId())
+                .append(<span class="st">"gross_amount_cents"</span>,    snap.getGrossAmountCents())
+                .append(<span class="st">"refund_amount_cents"</span>,   snap.getRefundAmountCents())
+                .append(<span class="st">"success_count"</span>,         snap.getSuccessCount())
+                .append(<span class="st">"failed_count"</span>,          snap.getFailedCount())
+                .append(<span class="st">"total_count"</span>,           snap.getTotalCount())
+                .append(<span class="st">"fraud_count"</span>,           snap.getFraudCount())
+                .append(<span class="st">"fraud_amount_cents"</span>,    snap.getFraudAmountCents())
+                .append(<span class="st">"last_event_timestamp"</span>,  snap.getLastEventTimestamp())
+                .append(<span class="st">"computed_at"</span>,           snap.getComputedAt())
+                .append(<span class="st">"is_retroactive"</span>,        snap.isRetroactiveCorrection()));
+
+            <span class="kw">return new</span> <span class="cl">UpdateOneModel</span>&lt;<span class="cl">Document</span>&gt;(
+                filter, update, <span class="kw">new</span> <span class="cl">UpdateOptions</span>().upsert(<span class="kw">true</span>));
+        })
+        .collect(<span class="cl">Collectors</span>.toList());
+
+    <span class="cm">// bulkWrite: atomic batch, ordered=false for maximum throughput</span>
+    collection.bulkWrite(ops, <span class="kw">new</span> <span class="cl">BulkWriteOptions</span>().ordered(<span class="kw">false</span>));
+}</pre>
+  </div>
+</div>
+<div class="panel note">
+  <div class="panel-header">Behaviour when the filter matches no document</div>
+  <div class="panel-body"><p>When no document exists yet for a given <code>(store_id, business_date, currency)</code> — first write of the day — the <code>$lt computed_at</code> filter matches nothing, so the upsert falls back to an insert. This is correct: a missing document has no <code>computed_at</code>, so the condition is treated as satisfied and the document is created.</p></div>
+</div>
+
+<h3 id="s4-2-4">4.2.4 REST Query API — Direct MongoDB Read</h3>
+<p>The KPI Query Service reads directly from MongoDB. The query latency is bounded by the MongoDB index read time — with the compound unique index on <code>(store_id, business_date, currency)</code>, a single-POS lookup is a constant-time point query regardless of the total number of documents in the collection.</p>
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — KpiQueryController (Spring Boot)</span></div>
+  <div class="code-macro-body"><pre><span class="an">@GetMapping</span>(<span class="st">"/kpi/{storeId}/date/{date}/currency/{currency}"</span>)
+<span class="kw">public</span> <span class="cl">ResponseEntity</span>&lt;<span class="cl">KpiResponse</span>&gt; getKpi(
+        <span class="an">@PathVariable</span> <span class="cl">String</span> storeId,
+        <span class="an">@PathVariable</span> <span class="cl">String</span> date,
+        <span class="an">@PathVariable</span> <span class="cl">String</span> currency) {
+
+    <span class="cm">// Direct MongoDB point lookup — O(log n) on the compound index</span>
+    <span class="kw">return</span> kpiRepository
+        .findByStoreIdAndDateAndCurrency(storeId, <span class="cl">LocalDate</span>.parse(date), currency)
+        .map(snap -&gt; {
+            <span class="cm">// Derived metrics computed at response time from stored sufficients</span>
+            <span class="cl">KpiResponse</span> resp = snap.toResponse();
+            <span class="kw">return</span> <span class="cl">ResponseEntity</span>.ok()
+                .header(<span class="st">"X-KPI-Computed-At"</span>, snap.getComputedAt().toString())
+                .header(<span class="st">"X-KPI-Retroactive"</span>, String.valueOf(snap.isRetroactiveCorrection()))
+                .body(resp);
+        })
+        .orElse(<span class="cl">ResponseEntity</span>.ok(<span class="cl">KpiResponse</span>.empty(storeId, date, currency)));
+}</pre>
+  </div>
+</div>
+<div class="panel info">
+  <div class="panel-header">Staleness transparency via response headers</div>
+  <div class="panel-body"><p>The <code>X-KPI-Computed-At</code> header exposes the timestamp of the last accumulator snapshot written to MongoDB. The dashboard can use this value to display a "last updated" indicator to the merchant, making the 1–10 minute freshness lag explicit rather than invisible. The <code>X-KPI-Retroactive: true</code> header signals that the displayed value includes a late-event correction, allowing the UI to surface a visual indicator (e.g. a "corrected" badge on historical date views).</p></div>
+</div>
+
+<h3 id="s4-2-5">4.2.5 Cross-POS Consolidation at Query Time</h3>
+<p>Merchant-level KPIs are computed on demand by fetching all per-POS documents from MongoDB and merging them. MongoDB's compound index on <code>(merchant_id, business_date, currency)</code> makes this a single range scan rather than N independent point queries.</p>
+<div class="code-macro">
+  <div class="code-macro-header"><span>Java — merchant-level consolidation endpoint</span></div>
+  <div class="code-macro-body"><pre><span class="an">@GetMapping</span>(<span class="st">"/kpi/merchant/{merchantId}/date/{date}/currency/{currency}"</span>)
+<span class="kw">public</span> <span class="cl">KpiResponse</span> getMerchantKpi(
+        <span class="an">@PathVariable</span> <span class="cl">String</span> merchantId,
+        <span class="an">@PathVariable</span> <span class="cl">String</span> date,
+        <span class="an">@PathVariable</span> <span class="cl">String</span> currency) {
+
+    <span class="cm">// Single MongoDB query — index scan on (merchant_id, business_date, currency)</span>
+    <span class="cl">List</span>&lt;<span class="cl">KpiSnapshot</span>&gt; storeSnapshots = kpiRepository
+        .findAllByMerchantDateCurrency(merchantId, <span class="cl">LocalDate</span>.parse(date), currency);
+
+    <span class="cm">// Merge: sum all additive fields, recompute derived metrics from merged sums</span>
+    <span class="kw">return</span> storeSnapshots.stream()
+        .reduce(<span class="cl">KpiSnapshot</span>.empty(), <span class="cl">KpiSnapshot</span>::merge)
+        .toResponse();
+    <span class="cm">// KpiSnapshot.merge() sums gross/refund/success/failed/fraud counts,</span>
+    <span class="cm">// then toResponse() derives avg basket, rates from the merged sums.</span>
+}</pre>
+  </div>
+</div>
+
+<h3 id="s4-2-6">4.2.6 MongoDB Data Model — kpi_snapshots Collection</h3>
+<div class="kv-box">Unique index (= document identifier):<br/>
+&nbsp;&nbsp;{ store_id: 1, business_date: 1, currency: 1 } — unique<br/><br/>
+Document fields:<br/>
+&nbsp;&nbsp;store_id, merchant_id, business_date, currency<br/>
+&nbsp;&nbsp;gross_amount_cents, refund_amount_cents<br/>
+&nbsp;&nbsp;success_count, failed_count, total_count<br/>
+&nbsp;&nbsp;fraud_count, fraud_amount_cents<br/>
+&nbsp;&nbsp;last_event_timestamp, computed_at, is_retroactive_correction<br/><br/>
+Additional indexes:<br/>
+&nbsp;&nbsp;{ merchant_id: 1, business_date: 1, currency: 1 } — merchant consolidation range scan<br/>
+&nbsp;&nbsp;{ business_date: 1 } — date range queries, day-close reporting<br/>
+&nbsp;&nbsp;{ computed_at: 1 } — monitoring freshness lag, ops alerting<br/><br/>
+TTL index (optional):<br/>
+&nbsp;&nbsp;{ business_date: 1 }, expireAfterSeconds: 7776000 — auto-expire documents older than 90 days
+</div>
+<p>Derived metrics (average basket, failure rate, net amount) are not stored — they are computed by <code>KpiSnapshot.toResponse()</code> at API response time from the stored statistical sufficients. This ensures that a late-event correction of a stored sum automatically yields a correct derived value at the next query, without any schema migration or recomputation job.</p>
+
+<h3 id="s4-2-7">4.2.7 Future Evolution — Real-Time Push Channel</h3>
+<div class="panel note">
+  <div class="panel-header">Out of initial scope — planned evolution</div>
+  <div class="panel-body">
+    <p>When dashboard requirements evolve toward sub-second KPI refresh (e.g., live cash flow display during peak hours), a push channel can be added without any modification to the Kafka Streams topology or the MongoDB write path. The topology already produces <code>kpi.store.day.current.v1</code> (log-compacted, emitted on every accumulator update) specifically to support this future use case.</p>
+    <p>The planned evolution adds two components:</p>
+    <ul>
+      <li><strong>Push Service:</strong> a new Kafka consumer subscribed to <code>kpi.store.day.current.v1</code> that dispatches KPI snapshots to dashboard clients via WebSocket (STOMP) or Server-Sent Events. Retroactive corrections are routed to a date-specific channel (<code>/topic/kpi/{storeId}/{date}/{currency}</code>) so that historical dashboard views can be updated independently of the current-day display.</li>
+      <li><strong>Redis (optional):</strong> if the number of concurrent WebSocket connections is high, Redis Pub/Sub can be introduced as the message broker between the Push Service instances and the connected clients, replacing direct in-process STOMP dispatch. Redis may also serve as an in-memory snapshot cache if polling latency from MongoDB becomes a concern at very high query rates.</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s4-2-8">4.2.8 Exposure Layer Summary</h3>
+<table>
+  <thead><tr><th>Access pattern</th><th>Endpoint</th><th>Implementation</th><th>Freshness</th></tr></thead>
+  <tbody>
+    <tr><td>Current-day KPIs per POS</td><td><code>GET /kpi/{storeId}/date/{today}/{currency}</code></td><td>Direct MongoDB point lookup</td><td>1–10 min</td></tr>
+    <tr><td>Historical KPIs per POS</td><td><code>GET /kpi/{storeId}/date/{date}/{currency}</code></td><td>Direct MongoDB point lookup</td><td>Stable (corrected on late events)</td></tr>
+    <tr><td>Merchant consolidation</td><td><code>GET /kpi/merchant/{id}/date/{date}/{currency}</code></td><td>MongoDB range scan on merchant index + <code>KpiSnapshot.merge()</code></td><td>1–10 min</td></tr>
+    <tr><td>Live push (future)</td><td>WebSocket <code>/topic/kpi/{storeId}</code></td><td>Push Service ← <code>kpi.store.day.current.v1</code> (topic already produced)</td><td>&lt; 2 s when active</td></tr>
+  </tbody>
+</table>
+
+<div class="panel success">
+  <div class="panel-header">All constraints satisfied — initial scope</div>
+  <div class="panel-body">
+    <ul>
+      <li><strong>DB freshness (1–10 min):</strong> Suppress 5-min silence window → <code>kpi.store.day.snapshot.v1</code> → MongoDB batch upsert.</li>
+      <li><strong>Write load control:</strong> N transactions per POS per window → 1 MongoDB write (Dirty Key Tracking / debounce pattern).</li>
+      <li><strong>Late event correctness:</strong> open KeyValueStore keyed by <code>store_id|business_date|currency</code> — no window closure for 90 days. Late events update the correct MongoDB document on next snapshot emission.</li>
+      <li><strong>Decoupling:</strong> independent consumer group <code>kpi-processor</code>; REST API reads MongoDB directly — zero dependency on Kafka Streams application lifecycle.</li>
+      <li><strong>Exactly-once:</strong> EOS v2 + application-level <code>event_id</code> deduplication set + MongoDB versioned upsert guard (<code>computed_at $lt</code>).</li>
+      <li><strong>Fault tolerance:</strong> RocksDB + Kafka changelog; state recovery without full transaction replay. MongoDB is durable independently.</li>
+      <li><strong>Cross-POS consolidation:</strong> single MongoDB range scan on merchant index + in-memory merge at query time.</li>
+      <li><strong>Multi-currency:</strong> currency is part of the composite key; no cross-currency mixing in accumulators or MongoDB documents.</li>
+      <li><strong>Future push channel:</strong> <code>kpi.store.day.current.v1</code> already produced — Push Service and optional Redis can be added with no topology change.</li>
+    </ul>
+  </div>
+</div>
+
+</main>
+</div>
+</div>
+</body>
+</html>
