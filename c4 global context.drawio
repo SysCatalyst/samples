@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+  <root>
+    <mxCell id="0" /><mxCell id="1" parent="0" />
+
+    <!-- Title -->
+    <mxCell id="title" value="C4 Model — Level 1: System Context&#xa;Card Payment Data Platform" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=20;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="560" y="20" width="800" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         TOP — Partners systems (external, above BNPP)
+    ════════════════════════════════════════════════ -->
+    <mxCell id="partners" value="&lt;b&gt;Partners systems&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Computop, Nepting, ..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=14;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="720" y="100" width="280" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         BNPP BOUNDARY
+    ════════════════════════════════════════════════ -->
+    <mxCell id="bnpp_bnd" value="BNPP" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#1F3864;strokeWidth=2;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=16;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+      <mxGeometry x="100" y="260" width="1200" height="620" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         LEFT — SID
+    ════════════════════════════════════════════════ -->
+    <mxCell id="sid" value="&lt;b&gt;SID&lt;/b&gt;&#xa;[External System]&#xa;&#xa;Reference data source" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=14;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="130" y="440" width="180" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         CENTRE-LEFT — Card Payment Data Platform
+    ════════════════════════════════════════════════ -->
+    <mxCell id="cpdp" value="&lt;b&gt;Card Payment Data Platform&lt;/b&gt;&#xa;[Software System — in scope]&#xa;&#xa;Ingests and enriches payment&#xa;transaction events.&#xa;Computes and exposes KPIs." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1168BD;strokeColor=#0E5EA3;fontColor=#ffffff;fontSize=14;arcSize=3;" vertex="1" parent="1">
+      <mxGeometry x="370" y="390" width="340" height="210" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         CENTRE-RIGHT — Vision Portal
+    ════════════════════════════════════════════════ -->
+    <mxCell id="vision" value="&lt;b&gt;Vision Portal&lt;/b&gt;&#xa;[Software System]&#xa;&#xa;Merchant-facing portal.&#xa;Transaction management,&#xa;Cash monitoring,&#xa;Reporting &amp; Analytics." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=14;arcSize=3;" vertex="1" parent="1">
+      <mxGeometry x="810" y="390" width="300" height="210" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         RIGHT — Merchant System boundary
+    ════════════════════════════════════════════════ -->
+    <mxCell id="merchant_bnd" value="Merchant System" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.lean_mapping.electronic_info_flow_edge;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#444444;strokeWidth=1.5;dashed=1;verticalLabelPosition=top;verticalAlign=bottom;fontSize=14;fontStyle=1;fontColor=#444444;" vertex="1" parent="1">
+      <mxGeometry x="1200" y="290" width="340" height="520" as="geometry" />
+    </mxCell>
+
+    <!-- Merchant User (person) -->
+    <mxCell id="merchant_user" value="&lt;b&gt;Merchant User&lt;/b&gt;&#xa;[Person]" style="shape=mxgraph.c4.person2;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#073B6F;fontColor=#ffffff;align=center;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="1390" y="410" width="120" height="140" as="geometry" />
+    </mxCell>
+
+    <!-- SSO (inside Merchant System) -->
+    <mxCell id="sso_merch" value="&lt;b&gt;SSO&lt;/b&gt;&#xa;[External System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=13;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1230" y="670" width="150" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         BOTTOM
+    ════════════════════════════════════════════════ -->
+
+    <!-- Reporting -->
+    <mxCell id="reporting" value="&lt;b&gt;Reporting&lt;/b&gt;&#xa;[External System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=14;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="200" y="780" width="200" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- Base traça -->
+    <mxCell id="base_traca" value="&lt;b&gt;Base traça&lt;/b&gt;&#xa;[External System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=14;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="620" y="780" width="200" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- SSO (bottom, BNPP side) -->
+    <mxCell id="sso_bnpp" value="&lt;b&gt;SSO&lt;/b&gt;&#xa;[External System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=#6C6C6C;fontColor=#ffffff;fontSize=14;arcSize=4;" vertex="1" parent="1">
+      <mxGeometry x="1010" y="780" width="180" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         RELATIONSHIPS
+    ════════════════════════════════════════════════ -->
+
+    <!-- Partners ↔ CPDP : Onboarding (dashed, bidirectional) -->
+    <mxCell id="r_partners_onboarding" value="Onboarding" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#BA7517;fontColor=#BA7517;fontSize=12;fontStyle=1;endArrow=block;endFill=1;startArrow=block;startFill=0;dashed=1;strokeWidth=2;" edge="1" parent="1" source="partners" target="cpdp">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="780" y="280" /><mxPoint x="540" y="280" /><mxPoint x="540" y="390" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Partners ↔ Vision Portal : Transaction management (dashed) -->
+    <mxCell id="r_partners_tx_mgmt" value="Transaction management" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#BA7517;fontColor=#BA7517;fontSize=12;fontStyle=1;endArrow=block;endFill=1;startArrow=block;startFill=0;dashed=1;strokeWidth=2;" edge="1" parent="1" source="partners" target="vision">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="950" y="280" /><mxPoint x="960" y="280" /><mxPoint x="960" y="390" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- SID → CPDP : Reference data flow -->
+    <mxCell id="r_sid_cpdp" value="Reference data flow&#xa;(Offer Contract, Merchant&#xa;contract, Merchant Hierarchy)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#BA7517;fontColor=#BA7517;fontSize=12;fontStyle=1;endArrow=block;endFill=1;dashed=1;strokeWidth=2;" edge="1" parent="1" source="sid" target="cpdp">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- CPDP → Vision Portal : Enriched transactions + Expose KPIs -->
+    <mxCell id="r_cpdp_vision_kpi" value="Enriched transactions&#xa;Expose KPIs" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0E5EA3;fontColor=#0E5EA3;fontSize=12;fontStyle=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="cpdp" target="vision">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- CPDP → Reporting : export KPIs -->
+    <mxCell id="r_cpdp_reporting" value="export KPIs" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#BA7517;fontColor=#BA7517;fontSize=12;fontStyle=1;endArrow=block;endFill=1;dashed=1;strokeWidth=2;" edge="1" parent="1" source="cpdp" target="reporting">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="540" y="600" /><mxPoint x="540" y="700" /><mxPoint x="300" y="700" /><mxPoint x="300" y="780" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Vision Portal → Base traça : push events -->
+    <mxCell id="r_vision_traca" value="push events" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#BA7517;fontColor=#BA7517;fontSize=12;fontStyle=1;endArrow=block;endFill=1;dashed=1;strokeWidth=2;" edge="1" parent="1" source="vision" target="base_traca">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="960" y="700" /><mxPoint x="720" y="700" /><mxPoint x="720" y="780" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Vision Portal ↔ Merchant System : Transaction management -->
+    <mxCell id="r_vision_merch_tx" value="Transaction management" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#444444;fontColor=#444444;fontSize=12;fontStyle=1;endArrow=block;endFill=1;startArrow=block;startFill=0;dashed=1;strokeWidth=1.5;" edge="1" parent="1" source="vision" target="merchant_user">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1110" y="470" /><mxPoint x="1200" y="470" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Vision Portal → Merchant System : Onboarding process -->
+    <mxCell id="r_vision_merch_onboard" value="Onboarding process" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#BA7517;fontColor=#BA7517;fontSize=12;fontStyle=1;endArrow=block;endFill=1;dashed=1;strokeWidth=2;" edge="1" parent="1" source="vision" target="merchant_user">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1110" y="430" /><mxPoint x="1200" y="430" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Vision Portal → Merchant User : Cash monitoring / Reporting / Analytics -->
+    <mxCell id="r_vision_merch_cash" value="Cash monitoring&#xa;Reporting / Analytics boards" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#BA7517;fontColor=#BA7517;fontSize=12;fontStyle=1;endArrow=block;endFill=1;dashed=1;strokeWidth=2;" edge="1" parent="1" source="vision" target="merchant_user">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1110" y="540" /><mxPoint x="1200" y="540" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- SSO (Merchant) → Merchant System : Auth / Access management -->
+    <mxCell id="r_sso_merch" value="Auth / Access management" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#444444;fontColor=#444444;fontSize=12;fontStyle=0;endArrow=block;endFill=1;dashed=1;strokeWidth=1.5;" edge="1" parent="1" source="sso_merch" target="merchant_user">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- SSO (BNPP bottom) → Vision Portal -->
+    <mxCell id="r_sso_vision" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#444444;fontColor=#444444;fontSize=12;endArrow=block;endFill=1;dashed=1;strokeWidth=1.5;" edge="1" parent="1" source="sso_bnpp" target="vision">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1100" y="780" /><mxPoint x="1100" y="710" /><mxPoint x="960" y="710" /><mxPoint x="960" y="600" /></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Legend -->
+    <mxCell id="lb" value="" style="rounded=1;fillColor=#F5F5F5;strokeColor=#CCCCCC;" vertex="1" parent="1"><mxGeometry x="110" y="280" width="230" height="110" as="geometry" /></mxCell>
+    <mxCell id="lt" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="126" y="290" width="80" height="18" as="geometry" /></mxCell>
+    <mxCell id="l1" value="" style="rounded=1;fillColor=#1168BD;strokeColor=#0E5EA3;" vertex="1" parent="1"><mxGeometry x="126" y="316" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l1t" value="System in scope (CPDP)" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="148" y="316" width="180" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2" value="" style="rounded=1;fillColor=#999999;strokeColor=#6C6C6C;" vertex="1" parent="1"><mxGeometry x="126" y="340" width="16" height="16" as="geometry" /></mxCell>
+    <mxCell id="l2t" value="External system" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="148" y="340" width="180" height="16" as="geometry" /></mxCell>
+    <mxCell id="l3t" value="━━▶ synchronous    ╌╌▶ async / event" style="text;html=1;strokeColor=none;fillColor=none;fontSize=11;" vertex="1" parent="1"><mxGeometry x="126" y="364" width="200" height="16" as="geometry" /></mxCell>
+
+  </root>
+</mxGraphModel>
