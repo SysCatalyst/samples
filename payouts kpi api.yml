@@ -1,0 +1,923 @@
+openapi: 3.0.3
+
+info:
+  title: Payouts & Cashflow Announcement KPI API
+  description: |
+    API exposing Payouts KPI data for the Accepta Vision Portal merchant dashboard.
+
+    **Business context:** Enables merchants to visualize the amount credited to (or debited
+    from) their bank account per banking business day, filtered by RIB or SIREN.
+    Payouts reflect the global remittance amount without scheme fees and rejections,
+    covering all BNPP schemes (CB, VISA, MC, JCB, Diners, UPI).
+
+    **Data source:** TOAS42-10 batch files provided by BCEF IT — 9 sessions per day
+    (22:50 → 12:00). Amounts are updated at each new batch session reception.
+
+    **Authentication:** Bearer JWT token required on all endpoints.
+  version: 1.0.0
+  contact:
+    name: Card Payment Data Platform — BNPP
+  license:
+    name: Internal — BNPP Confidential
+
+servers:
+  - url: http://api.axepta-datastore.dev.echonet/api/v1
+    description: Development environment
+  - url: https://api.axepta-datastore.echonet/api/v1
+    description: Production environment
+
+tags:
+  - name: Payouts List
+    description: Paginated list of daily payout aggregates per acquirer contract
+  - name: Payouts Details
+    description: Detailed payout breakdown per SIREN / RIB with dynamic filtering
+  - name: Payouts Export
+    description: CSV export of payout data (list or detail view)
+
+# ─────────────────────────────────────────────────────────────────
+# REUSABLE COMPONENTS
+# ─────────────────────────────────────────────────────────────────
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the SSO OAuth2 provider.
+
+  # ── Shared parameters ──────────────────────────────────────────
+  parameters:
+
+    startDate:
+      name: startDate
+      in: query
+      required: false
+      description: |
+        Start date of the search window. All remittances from this date onwards
+        are included. Defaults to the first day of the current week (Monday).
+      schema:
+        type: string
+        format: date-time
+        example: "2024-06-01T23:00:00Z"
+      example: "2024-06-01T23:00:00Z"
+
+    endDate:
+      name: endDate
+      in: query
+      required: false
+      description: |
+        End date of the search window. All remittances up to and including this
+        date are included. Defaults to the current day (end of day).
+      schema:
+        type: string
+        format: date-time
+        example: "2024-06-30T23:00:00Z"
+      example: "2024-06-30T23:00:00Z"
+
+    pageId:
+      name: pageId
+      in: query
+      required: false
+      description: |
+        Page number to retrieve (0-indexed).
+        Use pageId=0 to retrieve the first page of results.
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 2147483647
+        default: 0
+        example: 0
+
+    pageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: |
+        Maximum number of lines per page.
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 500
+        default: 20
+        example: 50
+
+    sort:
+      name: sort
+      in: query
+      required: false
+      description: |
+        Comma-separated list of fields used to sort the results.
+        Prefix a field name with `-` to sort descending on that field.
+        Default sort is descending on `remittanceSettlementDate`.
+      schema:
+        type: string
+        example: "-remittanceSettlementDate,acquirerMerchantIdentifier"
+
+  # ── Shared request body schemas ────────────────────────────────
+  schemas:
+
+    AcceptorIdentificationArray:
+      type: array
+      description: |
+        List of acquirer merchant identifiers (MIDs) associated to the
+        Merchant Acquirer scope. Maximum 10 000 contracts per request.
+      items:
+        type: string
+      maxItems: 10000
+      example: ["123456789", "987654321"]
+
+    SirenArray:
+      type: array
+      description: |
+        List of SIREN numbers associated to the Merchant Acquirer.
+        Used to filter payouts at the legal entity level.
+        Maximum 10 000 items per request.
+      items:
+        type: string
+        pattern: '^\d{9}$'
+      maxItems: 10000
+      example: ["123456789", "987654321"]
+
+    RibArray:
+      type: array
+      description: |
+        List of RIB (bank account identifiers) associated to the Merchant Acquirer.
+        Used to filter payouts at the bank account level.
+        Maximum 10 000 items per request.
+      items:
+        type: string
+      maxItems: 10000
+      example: ["30004100020123456789191", "30004100020987654321010"]
+
+    DynamicFilter:
+      type: object
+      description: |
+        A single dynamic filter clause applied to the detail view.
+        Multiple filters are combined with AND logic.
+      required:
+        - field
+        - operator
+        - value
+      properties:
+        field:
+          type: string
+          description: Name of the field to filter on.
+          example: "cardProgrammeApplied"
+        operator:
+          type: string
+          description: Comparison operator.
+          enum: [eq, neq, lt, lte, gt, gte, in, nin, contains]
+          example: "eq"
+        value:
+          type: string
+          description: Value to compare the field against.
+          example: "CB"
+
+    PaginationMetadata:
+      type: object
+      description: Pagination metadata returned with every paginated response.
+      required:
+        - pageId
+        - pageSize
+        - pageCount
+        - resourceCount
+      properties:
+        pageId:
+          type: integer
+          description: Current page number (0-indexed).
+          example: 0
+        pageSize:
+          type: integer
+          description: Number of items per page as requested.
+          example: 50
+        pageCount:
+          type: integer
+          description: Total number of pages estimated from resourceCount / pageSize.
+          example: 12
+        resourceCount:
+          type: integer
+          format: int64
+          description: Total number of records matching the query.
+          example: 582
+
+    # ── PayoutsDTO — list endpoint response item ─────────────────
+    # Exact property names from Confluence spec (listPayouts: Payouts object spec)
+    PayoutsDTO:
+      type: object
+      description: |
+        `PayoutsDTO` — aggregated payout object returned by `POST /kpi/payouts/list`.
+        One item per banking business day in the requested date range.
+        Field names are the exact names defined in the API interface contract.
+      required:
+        - grossAmountDebit
+        - totalDebitCount
+        - grossAmountCredit
+        - totalCreditCount
+        - grossAmount
+        - totalCount
+        - currency
+        - lastUpdateDateTimeGMT
+      properties:
+        grossAmountDebit:
+          type: number
+          format: double
+          description: |
+            Total gross debit amount for the settlement date
+            (sum of remittanceGrossAmountDebit across all contracts in scope).
+          example: -1240.50
+        totalDebitCount:
+          type: number
+          format: int64
+          description: Total number of debit remittance transactions.
+          example: 12
+        grossAmountCredit:
+          type: number
+          format: double
+          description: |
+            Total gross credit amount for the settlement date
+            (sum of remittanceGrossAmountCredit across all contracts in scope).
+          example: 15430.75
+        totalCreditCount:
+          type: number
+          format: int64
+          description: Total number of credit remittance transactions.
+          example: 330
+        grossAmount:
+          type: number
+          format: double
+          description: |
+            Net total gross payout amount: `grossAmountCredit + grossAmountDebit`.
+            This is the Payout KPI value — the global amount without scheme fees
+            and rejections for the banking business day (all BNPP schemes included).
+          example: 14190.25
+        totalCount:
+          type: number
+          format: int64
+          description: Total number of remittance transactions (debit + credit).
+          example: 342
+        currency:
+          type: string
+          description: ISO 4217 currency code of the remittance amounts.
+          example: "EUR"
+        grossAmountQualifier:
+          type: string
+          description: |
+            Qualifier indicating the nature or sign convention of the gross amount.
+          example: "CREDIT"
+        accountNumber:
+          type: number
+          description: Bank account number associated to this payout record.
+          example: 30004100020123456789191
+        lastUpdateDateTimeGMT:
+          type: string
+          description: |
+            ISO 8601 timestamp (Europe/Paris timezone) of the last update
+            of this payout record. Reflects the most recent BCEF IT batch
+            session that modified the amounts for this settlement date.
+          example: "2024-06-14T12:00:00+02:00"
+
+    # ── PayoutsDetailsDTO — details endpoint response item ───────
+    # Exact property names from Confluence spec (PayoutsDetailsDTO object spec)
+    PayoutsDetailsDTO:
+      type: object
+      description: |
+        `PayoutsDetailsDTO` — detailed payout object returned by
+        `POST /kpi/payouts/details`. One item per SIREN / RIB combination
+        per banking business day. Mirrors the WCR detail view column layout.
+      required:
+        - grossAmountDebit
+        - totalDebitCount
+        - grossAmountCredit
+        - totalCreditCount
+        - grossAmount
+        - totalCount
+        - currency
+        - siren
+        - date
+        - lastUpdateDateTimeGMT
+      properties:
+        grossAmountDebit:
+          type: number
+          format: double
+          description: Gross debit amount for this SIREN / RIB on the given date.
+          example: -310.00
+        totalDebitCount:
+          type: number
+          format: int64
+          description: Number of debit transactions for this SIREN / RIB.
+          example: 3
+        grossAmountCredit:
+          type: number
+          format: double
+          description: Gross credit amount for this SIREN / RIB on the given date.
+          example: 3850.25
+        totalCreditCount:
+          type: number
+          format: int64
+          description: Number of credit transactions for this SIREN / RIB.
+          example: 82
+        grossAmount:
+          type: number
+          format: double
+          description: |
+            Net total gross amount for this SIREN / RIB:
+            `grossAmountCredit + grossAmountDebit`.
+          example: 3540.25
+        totalCount:
+          type: number
+          format: int64
+          description: Total number of transactions (debit + credit) for this SIREN / RIB.
+          example: 85
+        currency:
+          type: string
+          description: ISO 4217 currency code.
+          example: "EUR"
+        grossAmountQualifier:
+          type: string
+          description: Qualifier indicating the nature or sign convention of the gross amount.
+          example: "CREDIT"
+        accountNumber:
+          type: number
+          description: Bank account number (RIB) associated to this detail line.
+          example: 30004100020123456789191
+        siren:
+          type: number
+          description: SIREN number of the legal entity (9-digit identifier).
+          example: 123456789
+        date:
+          type: string
+          description: |
+            Banking business day for this detail line.
+            Format: ISO 8601 date `YYYY-MM-dd`.
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: "2024-06-14"
+        lastUpdateDateTimeGMT:
+          type: string
+          description: |
+            ISO 8601 timestamp (Europe/Paris timezone) of the last update
+            of this payout detail record.
+          example: "2024-06-14T12:00:00+02:00"
+
+    # ── Error envelope — 400 Bad Request ─────────────────────────
+    # Exact format from spec: { "status": 400, "errors": [ { "title": "...", "detail": "..." } ] }
+    ApiError400:
+      type: object
+      description: |
+        Standard error response for HTTP 400 Bad Request.
+        Multiple validation errors are returned in the `errors` array.
+      required:
+        - status
+        - errors
+      properties:
+        status:
+          type: integer
+          description: HTTP status code.
+          example: 400
+        errors:
+          type: array
+          description: List of individual validation error objects.
+          items:
+            $ref: '#/components/schemas/ApiErrorItem'
+      example:
+        status: 400
+        errors:
+          - title: "Invalid parameter"
+            detail: "Unknown field 'acceptorIdentification' for field 'sort'"
+          - title: "Invalid parameter"
+            detail: "Could not parse value 'wertwhrtw' for field 'startDate'"
+          - title: "Invalid parameter"
+            detail: "Page '897' is out of range"
+          - title: "Invalid parameter"
+            detail: "Page size 10000 exceeds max page size of 5000"
+
+    # ── Error envelope — 404 Not Found ───────────────────────────
+    # Exact format from spec: { "status": 404, "errors": [ { "title": "Payout not found", "detail": "..." } ] }
+    ApiError404:
+      type: object
+      description: Standard error response for HTTP 404 Not Found.
+      required:
+        - status
+        - errors
+      properties:
+        status:
+          type: integer
+          example: 404
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiErrorItem'
+      example:
+        status: 404
+        errors:
+          - title: "Payout not found"
+            detail: "Unknown Payout with id '1337'"
+
+    # ── Error envelope — 500 Internal Server Error ───────────────
+    # Exact format from spec: { "status": 500, "message": "An internal server error occured" }
+    ApiError500:
+      type: object
+      description: Standard error response for HTTP 500 Internal Server Error.
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          example: 500
+        message:
+          type: string
+          description: Human-readable description of the server error.
+          example: "An internal server error occured"
+      example:
+        status: 500
+        message: "An internal server error occured"
+
+    # ── Shared error item ─────────────────────────────────────────
+    ApiErrorItem:
+      type: object
+      description: Single error entry within the `errors` array.
+      required:
+        - title
+        - detail
+      properties:
+        title:
+          type: string
+          description: Short error category label.
+          example: "Invalid parameter"
+        detail:
+          type: string
+          description: Detailed human-readable description of the error cause.
+          example: "Could not parse value 'wertwhrtw' for field 'startDate'"
+
+    # ── Success envelope wrapper ──────────────────────────────────
+    # As per spec: { "status": 200, "data": [...] }
+    PayoutsListResponse:
+      type: object
+      description: |
+        Envelope wrapping the paginated list of `PayoutsDTO` items.
+        The `status` field echoes the HTTP 200 status code.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: integer
+          example: 200
+        pageId:
+          type: integer
+          description: Current page number (0-indexed).
+          example: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          example: 50
+        pageCount:
+          type: integer
+          description: Total number of pages (resourceCount / pageSize).
+          example: 12
+        resourceCount:
+          type: integer
+          format: int64
+          description: Total number of payout records matching the query.
+          example: 582
+        data:
+          type: array
+          description: List of payout aggregate objects for the requested period.
+          items:
+            $ref: '#/components/schemas/PayoutsDTO'
+
+    PayoutsDetailsResponse:
+      type: object
+      description: |
+        Envelope wrapping the paginated list of `PayoutsDetailsDTO` items.
+        The `/details` endpoint additionally embeds an `events` sub-array
+        per item for granular event breakdown.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: integer
+          example: 200
+        pageId:
+          type: integer
+          example: 0
+        pageSize:
+          type: integer
+          example: 50
+        pageCount:
+          type: integer
+          example: 4
+        resourceCount:
+          type: integer
+          format: int64
+          example: 185
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayoutsDetailsDTO'
+
+    PayoutsExportResponse:
+      type: object
+      description: |
+        Envelope wrapping the full (non-paginated) export data array.
+        Used by both `/export` and `/details/export`.
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            type: object
+            description: Exported record — same fields as the corresponding DTO.
+
+# ── Global security ────────────────────────────────────────────
+security:
+  - BearerAuth: []
+
+# ─────────────────────────────────────────────────────────────────
+# PATHS
+# ─────────────────────────────────────────────────────────────────
+paths:
+
+  # ══════════════════════════════════════════════════════════════
+  # 1. POST /api/v1/kpi/payouts/list
+  # ══════════════════════════════════════════════════════════════
+  /kpi/payouts/list:
+    post:
+      operationId: getPayoutsList
+      summary: List daily payout aggregates
+      description: |
+        Returns a paginated list of daily payout aggregates for the specified
+        date range and acquirer scope.
+
+        Each row in the response corresponds to one **banking business day**
+        and aggregates all remittances for the contracts in scope.
+
+        Weekends and public holidays have no payout — the dashboard renders
+        a "non-business day" indicator for these dates client-side.
+
+        **Default date range:** from the first day of the current week (Monday)
+        to the current day.
+      tags:
+        - Payouts List
+      parameters:
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
+        - $ref: '#/components/parameters/pageId'
+        - $ref: '#/components/parameters/pageSize'
+        - $ref: '#/components/parameters/sort'
+      requestBody:
+        required: false
+        description: |
+          Filter scope by acquirer contracts. All filters are optional —
+          omitting the body returns payouts for all contracts accessible
+          to the authenticated merchant user.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acceptorIdentification:
+                  $ref: '#/components/schemas/AcceptorIdentificationArray'
+            example:
+              acceptorIdentification: ["123456789"]
+      responses:
+        '200':
+          description: Paginated list of daily payout aggregates.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayoutsListResponse'
+              example:
+                status: 200
+                pageId: 0
+                pageSize: 50
+                pageCount: 1
+                resourceCount: 5
+                data:
+                  - grossAmountDebit: -1240.50
+                    totalDebitCount: 12
+                    grossAmountCredit: 15430.75
+                    totalCreditCount: 330
+                    grossAmount: 14190.25
+                    totalCount: 342
+                    currency: "EUR"
+                    grossAmountQualifier: "CREDIT"
+                    accountNumber: 30004100020123456789191
+                    lastUpdateDateTimeGMT: "2024-06-14T12:00:00+02:00"
+                  - grossAmountDebit: -820.00
+                    totalDebitCount: 8
+                    grossAmountCredit: 13200.00
+                    totalCreditCount: 290
+                    grossAmount: 12380.00
+                    totalCount: 298
+                    currency: "EUR"
+                    grossAmountQualifier: "CREDIT"
+                    accountNumber: 30004100020123456789191
+                    lastUpdateDateTimeGMT: "2024-06-13T12:00:00+02:00"
+        '400':
+          description: |
+            Bad Request — one or more request parameters are invalid.
+            All validation errors are returned together in the `errors` array.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '401':
+          description: Missing or invalid Bearer JWT token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '403':
+          description: Authenticated user does not have the Payouts access right.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+
+  # ══════════════════════════════════════════════════════════════
+  # 2. POST /api/v1/kpi/payouts/details
+  # ══════════════════════════════════════════════════════════════
+  /kpi/payouts/details:
+    post:
+      operationId: getPayoutsDetails
+      summary: Detailed payout breakdown per SIREN / RIB
+      description: |
+        Returns a paginated, filterable breakdown of payouts at the SIREN / RIB
+        granularity. This endpoint mirrors the WCR detail view column layout.
+
+        **Use case:** The merchant user clicks "Details" on a payout list row and
+        is directed to this view, where they can further filter by SIREN, RIB,
+        or card programme (CB, VISA, MC, JCB, Diners, UPI).
+
+        The `filters` array in the request body supports dynamic field-level
+        filtering. Multiple filters are combined with AND logic.
+      tags:
+        - Payouts Details
+      parameters:
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
+        - $ref: '#/components/parameters/pageId'
+        - $ref: '#/components/parameters/pageSize'
+        - $ref: '#/components/parameters/sort'
+      requestBody:
+        required: false
+        description: |
+          Filter scope and dynamic field filters.
+          `acceptorIdentification`, `siren`, and `rib` narrow the contract scope.
+          `filters` provides additional field-level filter clauses.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acceptorIdentification:
+                  $ref: '#/components/schemas/AcceptorIdentificationArray'
+                siren:
+                  $ref: '#/components/schemas/SirenArray'
+                rib:
+                  $ref: '#/components/schemas/RibArray'
+                filters:
+                  type: array
+                  description: |
+                    Dynamic filter clauses applied on top of the scope filters.
+                    Multiple entries are combined with AND logic.
+                  items:
+                    $ref: '#/components/schemas/DynamicFilter'
+            example:
+              acceptorIdentification: ["123456789"]
+              siren: ["123456789"]
+              rib: ["30004100020123456789191"]
+              filters:
+                - field: "cardProgrammeApplied"
+                  operator: "eq"
+                  value: "CB"
+      responses:
+        '200':
+          description: Paginated detail breakdown of payouts per SIREN / RIB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayoutsDetailsResponse'
+              example:
+                status: 200
+                pageId: 0
+                pageSize: 50
+                pageCount: 1
+                resourceCount: 3
+                data:
+                  - grossAmountDebit: -200.00
+                    totalDebitCount: 2
+                    grossAmountCredit: 2750.50
+                    totalCreditCount: 55
+                    grossAmount: 2550.50
+                    totalCount: 57
+                    currency: "EUR"
+                    grossAmountQualifier: "CREDIT"
+                    accountNumber: 30004100020123456789191
+                    siren: 123456789
+                    date: "2024-06-14"
+                    lastUpdateDateTimeGMT: "2024-06-14T12:00:00+02:00"
+        '400':
+          description: |
+            Bad Request — one or more request parameters or filter fields are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '401':
+          description: Missing or invalid Bearer JWT token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '403':
+          description: Authenticated user does not have the Payouts access right.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '404':
+          description: Payout record not found for the requested identifier.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError404'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+
+  # ══════════════════════════════════════════════════════════════
+  # 3. POST /api/v1/kpi/payouts/export
+  # ══════════════════════════════════════════════════════════════
+  /kpi/payouts/export:
+    post:
+      operationId: exportPayoutsList
+      summary: Export payout list as CSV
+      description: |
+        Exports the daily payout aggregate list (same data as `/kpi/payouts/list`)
+        as a downloadable CSV file for the specified date range and acquirer scope.
+
+        The CSV column order matches the list view:
+        `Date reversement, Nombre débits, Montant débits brut, Nombre crédits,
+        Montant crédits brut, Nombre total, Montant total brut`.
+
+        **Note:** Pagination parameters are not applicable to export — the full
+        result set is returned in one file. Date range is limited to 1 month
+        (24 months of history available).
+      tags:
+        - Payouts Export
+      parameters:
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acceptorIdentification:
+                  $ref: '#/components/schemas/AcceptorIdentificationArray'
+            example:
+              acceptorIdentification: ["123456789"]
+      responses:
+        '200':
+          description: CSV file stream containing the payout list for the requested period.
+          headers:
+            Content-Disposition:
+              description: Attachment filename for the CSV download.
+              schema:
+                type: string
+                example: 'attachment; filename="payouts_20240601_20240630.csv"'
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+              example: |
+                Date reversement,Nombre débits,Montant débits brut,Nombre crédits,Montant crédits brut,Nombre total,Montant total brut,Devise
+                2024-06-14,12,-1240.50,330,15430.75,342,14190.25,EUR
+                2024-06-13,8,-820.00,290,13200.00,298,12380.00,EUR
+        '400':
+          description: Invalid request parameters or date range exceeds 1 month.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '401':
+          description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '403':
+          description: Authenticated user does not have the Payouts right.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
+
+  # ══════════════════════════════════════════════════════════════
+  # 4. POST /api/v1/kpi/payouts/details/export
+  # ══════════════════════════════════════════════════════════════
+  /kpi/payouts/details/export:
+    post:
+      operationId: exportPayoutsDetails
+      summary: Export payout detail breakdown as CSV
+      description: |
+        Exports the detailed SIREN / RIB payout breakdown (same data as
+        `/kpi/payouts/details`) as a downloadable CSV file.
+
+        The CSV column order matches the detail view:
+        `Siren, RIB, Nombre débits, Montant débits brut, Nombre crédits,
+        Montant crédits brut, Nombre total, Montant total brut`.
+
+        Date range is limited to 1 month (24 months of history available).
+      tags:
+        - Payouts Export
+      parameters:
+        - $ref: '#/components/parameters/startDate'
+        - $ref: '#/components/parameters/endDate'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acceptorIdentification:
+                  $ref: '#/components/schemas/AcceptorIdentificationArray'
+                siren:
+                  $ref: '#/components/schemas/SirenArray'
+                rib:
+                  $ref: '#/components/schemas/RibArray'
+            example:
+              acceptorIdentification: ["123456789"]
+              siren: ["123456789"]
+              rib: ["30004100020123456789191"]
+      responses:
+        '200':
+          description: CSV file stream containing the payout detail for the requested period.
+          headers:
+            Content-Disposition:
+              description: Attachment filename for the CSV download.
+              schema:
+                type: string
+                example: 'attachment; filename="payouts_details_20240601_20240630.csv"'
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+              example: |
+                Siren,RIB,Nombre débits,Montant débits brut,Nombre crédits,Montant crédits brut,Nombre total,Montant total brut,Devise
+                123456789,30004100020123456789191,2,-200.00,55,2750.50,57,2550.50,EUR
+        '400':
+          description: Invalid request parameters or date range exceeds 1 month.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '401':
+          description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '403':
+          description: Authenticated user does not have the Payouts right.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError400'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError500'
