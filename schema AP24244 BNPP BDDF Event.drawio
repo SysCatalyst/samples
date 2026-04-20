@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ROOT: Event -->
+    <mxCell id="10" value="&lt;b&gt;Event&lt;/b&gt;&#xa;record | com.bnpparibas.dsibddf.event&#xa;―――――――――――――――&#xa;fields[1] = header (EventHeaderDef)&#xa;fields[2] = payload (map&lt;string&gt;)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Courier New;fontSize=11;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="620" y="40" width="380" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- HEADER: EventHeaderDef -->
+    <mxCell id="20" value="&lt;b&gt;EventHeaderDef&lt;/b&gt; (header)&#xa;record | com.bnpparibas.rdb.event.header&#xa;―――――――――――――――――――――――&#xa;eventTechId : string&#xa;eventNormVersion : string&#xa;timestamp : string&#xa;timeZone : string&#xa;apCode : string&#xa;channelType : TypeIdDef (nullable)&#xa;deviceType : TypeIdDef (nullable)&#xa;browserType : BrowserTypeDef (nullable)&#xa;connectionRef : string (nullable)&#xa;connectedUserRef : UserRefDef&#xa;endUser : UserRefDef[]&#xa;eventType : EventTypeDef&#xa;eventOrigin : EventOriginDef&#xa;localBusinessTime : string (nullable)&#xa;currentEventProducer : CurrentEventProducerDef&#xa;correlationSource : CorrelationSourceDef&#xa;parentProcess : ParentProcessDef&#xa;mainBusinessObject : MainBusinessObjectDef&#xa;secondaryBusinessObjects : SecondaryBusinessObjectsDef[]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="80" y="200" width="420" height="340" as="geometry" />
+    </mxCell>
+
+    <!-- PAYLOAD -->
+    <mxCell id="21" value="&lt;b&gt;payload&lt;/b&gt;&#xa;type: map&lt;string&gt;&#xa;―――――――&#xa;Libre / variable selon&#xa;le type d'événement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="200" width="260" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- TypeIdDef -->
+    <mxCell id="30" value="&lt;b&gt;TypeIdDef&lt;/b&gt;&#xa;record&#xa;―――――――――&#xa;ITRId : string (nullable)&#xa;OEId : string (nullable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="80" y="620" width="220" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- BrowserTypeDef -->
+    <mxCell id="31" value="&lt;b&gt;BrowserTypeDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――&#xa;browserTypeId : TypeIdDef&#xa;browserVersion : string (nullable)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="320" y="620" width="240" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- UserRefDef -->
+    <mxCell id="32" value="&lt;b&gt;UserRefDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――&#xa;userRef : string&#xa;userQualifierId : string" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="580" y="620" width="220" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- EventTypeDef -->
+    <mxCell id="33" value="&lt;b&gt;EventTypeDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――&#xa;eventTypeId : TypeIdDef&#xa;eventTypeVersion : string" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="820" y="620" width="220" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- EventOriginDef -->
+    <mxCell id="34" value="&lt;b&gt;EventOriginDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――&#xa;organizationalEntity : TypeIdDef&#xa;brand : string" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="1060" y="620" width="220" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- CurrentEventProducerDef -->
+    <mxCell id="35" value="&lt;b&gt;CurrentEventProducerDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――――――――&#xa;processId : string (nullable)&#xa;processType : TypeIdDef&#xa;stageId : string (nullable)&#xa;resourceId : string (nullable)&#xa;resourceType : TypeIdDef" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="80" y="800" width="260" height="120" as="geometry" />
+    </mxCell>
+
+    <!-- CorrelationSourceDef -->
+    <mxCell id="36" value="&lt;b&gt;CorrelationSourceDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――――――――&#xa;correlationSourceId : string (nullable)&#xa;correlationSourceType : TypeIdDef" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="360" y="800" width="260" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- ParentProcessDef -->
+    <mxCell id="37" value="&lt;b&gt;ParentProcessDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――――――――&#xa;parentProcessId : string (nullable)&#xa;parentProcessType : TypeIdDef" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="640" y="800" width="260" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- MainBusinessObjectDef -->
+    <mxCell id="38" value="&lt;b&gt;MainBusinessObjectDef&lt;/b&gt;&#xa;record&#xa;―――――――――――――――――――――&#xa;mainObjectId : string&#xa;mainObjectType : TypeIdDef" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="920" y="800" width="260" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- SecondaryBusinessObjectsDef -->
+    <mxCell id="39" value="&lt;b&gt;SecondaryBusinessObjectsDef&lt;/b&gt;&#xa;record | array item&#xa;―――――――――――――――――――――――――&#xa;secondaryObjectsId : string (nullable)&#xa;secondaryObjectsType : TypeIdDef" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Courier New;fontSize=10;align=left;spacingLeft=8;arcSize=5;" vertex="1" parent="1">
+      <mxGeometry x="1200" y="800" width="300" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- ====== EDGES ====== -->
+
+    <!-- Event -> header -->
+    <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="10" target="20" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e1l" value="header" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e1">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Event -> payload -->
+    <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="10" target="21" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e2l" value="payload" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="e2">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> TypeIdDef (channelType / deviceType) -->
+    <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;" edge="1" source="20" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e3l" value="channelType&#xa;deviceType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e3">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> BrowserTypeDef -->
+    <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;" edge="1" source="20" target="31" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e4l" value="browserType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e4">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> UserRefDef -->
+    <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="32" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e5l" value="connectedUserRef&#xa;endUser[]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e5">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> EventTypeDef -->
+    <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="33" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e6l" value="eventType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e6">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> EventOriginDef -->
+    <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="34" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e7l" value="eventOrigin" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e7">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> CurrentEventProducerDef -->
+    <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="35" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e8l" value="currentEventProducer" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e8">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> CorrelationSourceDef -->
+    <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="36" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e9l" value="correlationSource" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e9">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> ParentProcessDef -->
+    <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="37" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e10l" value="parentProcess" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e10">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> MainBusinessObjectDef -->
+    <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="38" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e11l" value="mainBusinessObject" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e11">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- Header -> SecondaryBusinessObjectsDef -->
+    <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" source="20" target="39" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e12l" value="secondaryBusinessObjects[]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e12">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- BrowserTypeDef -> TypeIdDef -->
+    <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="31" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e13l" value="browserTypeId" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e13">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- EventTypeDef -> TypeIdDef -->
+    <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="33" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e14l" value="eventTypeId" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e14">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- EventOriginDef -> TypeIdDef -->
+    <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="34" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e15l" value="organizationalEntity" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e15">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- CurrentEventProducerDef -> TypeIdDef -->
+    <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="35" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e16l" value="processType&#xa;resourceType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e16">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- CorrelationSourceDef -> TypeIdDef -->
+    <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="36" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e17l" value="correlationSourceType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e17">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- ParentProcessDef -> TypeIdDef -->
+    <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="37" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e18l" value="parentProcessType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e18">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- MainBusinessObjectDef -> TypeIdDef -->
+    <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="38" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e19l" value="mainObjectType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e19">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- SecondaryBusinessObjectsDef -> TypeIdDef -->
+    <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;strokeColor=#b85450;" edge="1" source="39" target="30" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e20l" value="secondaryObjectsType" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" vertex="1" connectable="0" parent="e20">
+      <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+    </mxCell>
+
+    <!-- LEGEND -->
+    <mxCell id="leg0" value="&lt;b&gt;Légende&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="200" width="120" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="leg1" value="Root record" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="240" width="120" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="leg2" value="Header record" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="280" width="120" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="leg3" value="Sub-record" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="320" width="120" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="leg4" value="Payload (map)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="360" width="120" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="leg5" value="――― composition" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="400" width="140" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg6" value="- - - TypeIdDef ref" style="text;html=1;strokeColor=none;fillColor=none;fontSize=10;align=left;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="420" width="140" height="20" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>
