@@ -1,0 +1,318 @@
+<mxfile host="app.diagrams.net" agent="Claude" version="24.0.0">
+  <diagram name="Flowable - Vue Composants" id="components-view">
+    <mxGraphModel dx="2400" dy="1400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ========== TITLE ========== -->
+        <mxCell id="title" value="Intégration Flowable BPMN&#xa;Vue Composants — C4 Container (niveau 2)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#0F172A;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="800" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Microservice Spring Boot embarquant Flowable Engine via dépendance Maven" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="800" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ========== EXTERNAL ACTORS (left column) ========== -->
+        <!-- Business Analyst -->
+        <mxCell id="actor-ba" value="&lt;b&gt;Business Analyst&lt;/b&gt;&lt;br/&gt;&lt;i style=&quot;color:#64748B;font-size:10px&quot;&gt;[Personne]&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;Modélise les workflows BPMN 2.0 métier" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;strokeWidth=2;fontSize=11;fontColor=#0F172A;align=center;verticalAlign=middle;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Client application -->
+        <mxCell id="actor-client" value="&lt;b&gt;Application cliente&lt;/b&gt;&lt;br/&gt;&lt;i style=&quot;color:#64748B;font-size:10px&quot;&gt;[Système externe]&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;Démarre &amp; pilote les instances de process via HTTPS/JSON" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;strokeWidth=2;fontSize=11;fontColor=#0F172A;align=center;verticalAlign=middle;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="290" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Ops/SRE -->
+        <mxCell id="actor-ops" value="&lt;b&gt;Ops / Dev&lt;/b&gt;&lt;br/&gt;&lt;i style=&quot;color:#64748B;font-size:10px&quot;&gt;[Personne]&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;Supervision, monitoring, accès Flowable REST" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;strokeWidth=2;fontSize=11;fontColor=#0F172A;align=center;verticalAlign=middle;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="440" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Flowable Modeler -->
+        <mxCell id="modeler" value="&lt;b&gt;Flowable Modeler / bpmn.io&lt;/b&gt;&lt;br/&gt;&lt;i style=&quot;color:#64748B;font-size:10px&quot;&gt;[Outil de design]&lt;/i&gt;&lt;br/&gt;&lt;br/&gt;Génère le fichier .bpmn20.xml&lt;br/&gt;(versionné dans Git)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;fontSize=11;fontColor=#92400E;align=center;verticalAlign=middle;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ========== MAIN CONTAINER : Microservice ========== -->
+        <mxCell id="microservice-container" value="📦  &lt;b&gt;workflow-orchestrator&lt;/b&gt;  ·  Microservice Spring Boot · Java 17  ·  [Container]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1D4ED8;strokeWidth=2;dashed=1;dashPattern=8 4;fontSize=13;fontStyle=1;fontColor=#1E40AF;align=left;verticalAlign=top;spacingTop=10;spacingLeft=15;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="340" y="140" width="900" height="560" as="geometry" />
+        </mxCell>
+
+        <!-- Spring Boot App block -->
+        <mxCell id="springboot-block" value="&lt;b&gt;Application Spring Boot&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;strokeWidth=1.5;fontSize=12;fontColor=#1E40AF;align=left;verticalAlign=top;spacingTop=8;spacingLeft=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="370" y="190" width="450" height="330" as="geometry" />
+        </mxCell>
+
+        <!-- Maven dependency -->
+        <mxCell id="maven-dep" value="&lt;b&gt;flowable-spring-boot-starter-process&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-family:monospace;font-size:10px;color:#475569&quot;&gt;&amp;lt;dependency&amp;gt; org.flowable : 7.x&lt;/span&gt;&lt;br/&gt;&lt;hr style=&quot;border:0.5px solid #CBD5E1&quot;/&gt;• ProcessEngine auto-configuré&lt;br/&gt;• REST API exposée automatiquement (auto-scan)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#1D4ED8;strokeWidth=2;fontSize=11;fontColor=#0F172A;align=left;verticalAlign=top;spacingTop=8;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="385" y="225" width="420" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- BPMN Resources -->
+        <mxCell id="bpmn-resources" value="📂 &lt;b&gt;src/main/resources/&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-family:monospace;font-size:10px;color:#475569&quot;&gt;processes/&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot;font-family:monospace;font-size:10px&quot;&gt;├─ onboarding.bpmn20.xml&lt;br/&gt;├─ refund.bpmn20.xml&lt;br/&gt;└─ kyc-review.bpmn20.xml&lt;/span&gt;&lt;br/&gt;&lt;i style=&quot;font-size:9px;color:#64748B&quot;&gt;↑ auto-deploy au démarrage&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3B82F6;strokeWidth=1.5;fontSize=10;fontColor=#0F172A;align=left;verticalAlign=top;spacingTop=8;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="385" y="345" width="205" height="155" as="geometry" />
+        </mxCell>
+
+        <!-- Business code -->
+        <mxCell id="business-code" value="&lt;b&gt;Code métier&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;• @Service JavaDelegate&lt;br/&gt;• Listeners d'événement&lt;br/&gt;• REST controllers custom&lt;br/&gt;• Mappings métier&lt;br/&gt;• Process Façade (API métier)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3B82F6;strokeWidth=1.5;fontSize=11;fontColor=#0F172A;align=left;verticalAlign=top;spacingTop=8;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="605" y="345" width="200" height="155" as="geometry" />
+        </mxCell>
+
+        <!-- Flowable Engine block -->
+        <mxCell id="engine-block" value="&lt;b&gt;Flowable Engine (embarqué)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#047857;strokeWidth=1.5;fontSize=12;fontColor=#065F46;align=left;verticalAlign=top;spacingTop=8;spacingLeft=12;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="840" y="190" width="380" height="490" as="geometry" />
+        </mxCell>
+
+        <!-- Process Engine -->
+        <mxCell id="process-engine" value="&lt;b&gt;Process Engine&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-size:10px;color:#475569&quot;&gt;Parsing BPMN · execution · state machine&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#10B981;strokeWidth=1;fontSize=11;fontColor=#065F46;align=left;verticalAlign=middle;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="855" y="225" width="350" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Services -->
+        <mxCell id="services" value="&lt;b&gt;Repository / Runtime / Task / History Services&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-size:10px;color:#475569&quot;&gt;API Java pour piloter les process en interne&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#10B981;strokeWidth=1;fontSize=11;fontColor=#065F46;align=left;verticalAlign=middle;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="855" y="300" width="350" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- REST API -->
+        <mxCell id="rest-api" value="&lt;b&gt;REST API auto-exposée&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-family:monospace;font-size:10px;color:#475569&quot;&gt;/flowable-rest/service/repository&lt;br/&gt;/flowable-rest/service/runtime&lt;br/&gt;/flowable-rest/service/history&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#10B981;strokeWidth=1;fontSize=11;fontColor=#065F46;align=left;verticalAlign=top;spacingTop=8;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="855" y="375" width="350" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Async executor -->
+        <mxCell id="async-executor" value="&lt;b&gt;Async Job Executor&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-size:10px;color:#475569&quot;&gt;Thread pool · timers · async service tasks · retries&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#10B981;strokeWidth=1;fontSize=11;fontColor=#065F46;align=left;verticalAlign=middle;spacingLeft=10;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="855" y="480" width="350" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Config note -->
+        <mxCell id="config-note" value="⚙ Activé / sécurisé via properties :&lt;br/&gt;&lt;span style=&quot;font-family:monospace;font-size:10px&quot;&gt;flowable.rest.app.authentication-mode&lt;br/&gt;flowable.process.async-executor-activate&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#10B981;strokeWidth=1;dashed=1;dashPattern=4 2;fontSize=10;fontColor=#065F46;align=left;verticalAlign=middle;spacingLeft=10;fontStyle=2;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="855" y="555" width="350" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Tech stack note -->
+        <mxCell id="tech-stack" value="Tech stack : Java 17 · Spring Boot 3.x · Flowable 7 · Maven" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#64748B;" vertex="1" parent="1">
+          <mxGeometry x="370" y="660" width="500" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ========== DATABASE ========== -->
+        <mxCell id="database" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-size:10px;color:#64748B&quot;&gt;[Database]&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;ACT_RE_* (definitions)&lt;br/&gt;ACT_RU_* (runtime)&lt;br/&gt;ACT_HI_* (history)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFFFFF;strokeColor=#7C3AED;strokeWidth=2;fontSize=11;fontColor=#5B21B6;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="280" width="200" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db-note" value="Schéma créé par Liquibase au boot&lt;br/&gt;property : &lt;span style=&quot;font-family:monospace&quot;&gt;flowable.database-schema-update&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=2;fontColor=#64748B;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="475" width="240" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== OBSERVABILITY ========== -->
+        <mxCell id="monitoring" value="&lt;b&gt;Monitoring stack&lt;/b&gt;&lt;br/&gt;&lt;span style=&quot;font-size:10px;color:#64748B&quot;&gt;[Système externe]&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;Prometheus + Grafana&lt;br/&gt;via Spring Boot Actuator&lt;br/&gt;+ Micrometer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;strokeWidth=2;fontSize=11;fontColor=#0F172A;align=center;verticalAlign=middle;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="550" width="200" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ========== ARROWS ========== -->
+
+        <!-- BA -> Modeler -->
+        <mxCell id="e-ba-modeler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#1F2937;strokeWidth=1.5;endArrow=classic;fontSize=10;fontColor=#475569;labelBackgroundColor=#FAFAFA;" edge="1" parent="1" source="actor-ba" target="modeler">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="575" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-ba-modeler-label" value="conçoit BPMN" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#475569;labelBackgroundColor=#FAFAFA;" connectable="0" vertex="1" parent="e-ba-modeler">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <mxPoint x="0" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Modeler -> BPMN resources -->
+        <mxCell id="e-modeler-res" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D97706;strokeWidth=2;endArrow=classic;dashed=1;dashPattern=6 3;fontSize=10;fontColor=#9A3412;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="modeler" target="bpmn-resources">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-modeler-res-label" value=".bpmn20.xml&#xa;commit dans Git" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#9A3412;labelBackgroundColor=#FAFAFA;fontStyle=1;" connectable="0" vertex="1" parent="e-modeler-res">
+          <mxGeometry x="-0.05" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Client app -> REST API -->
+        <mxCell id="e-client-rest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1D4ED8;strokeWidth=2;endArrow=classic;dashed=1;dashPattern=6 3;fontSize=10;fontColor=#1E40AF;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-client" target="rest-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-client-rest-label" value="HTTPS / JSON&#xa;démarre &amp; pilote les process" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#1E40AF;labelBackgroundColor=#FAFAFA;fontStyle=1;" connectable="0" vertex="1" parent="e-client-rest">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Ops -> REST API -->
+        <mxCell id="e-ops-rest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1D4ED8;strokeWidth=2;endArrow=classic;dashed=1;dashPattern=6 3;fontSize=10;fontColor=#1E40AF;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor-ops" target="rest-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ops-rest-label" value="monitoring · audit · ré-exécution" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#1E40AF;labelBackgroundColor=#FAFAFA;fontStyle=1;" connectable="0" vertex="1" parent="e-ops-rest">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- BPMN resources -> Process Engine (auto-deploy) -->
+        <mxCell id="e-res-engine" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#047857;strokeWidth=2;endArrow=classic;fontSize=10;fontColor=#047857;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="bpmn-resources" target="process-engine">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="422" />
+              <mxPoint x="700" y="255" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-res-engine-label" value="classpath scan au boot&#xa;→ deploy automatique" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#047857;labelBackgroundColor=#FAFAFA;fontStyle=1;" connectable="0" vertex="1" parent="e-res-engine">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Maven dep -> REST API (auto-config) -->
+        <mxCell id="e-maven-rest" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1D4ED8;strokeWidth=1.5;endArrow=classic;fontSize=9;fontColor=#1E40AF;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=2 2;" edge="1" parent="1" source="maven-dep" target="rest-api">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="828" y="275" />
+              <mxPoint x="828" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-maven-rest-label" value="auto-config" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;fontColor=#1E40AF;labelBackgroundColor=#FAFAFA;fontStyle=1;" connectable="0" vertex="1" parent="e-maven-rest">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Business code -> Services -->
+        <mxCell id="e-code-services" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1F2937;strokeWidth=1.5;endArrow=classic;fontSize=10;fontColor=#475569;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="business-code" target="services">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-code-services-label" value="injection Java API" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#475569;labelBackgroundColor=#FAFAFA;" connectable="0" vertex="1" parent="e-code-services">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Engine -> Database -->
+        <mxCell id="e-engine-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7C3AED;strokeWidth=2;endArrow=classic;fontSize=10;fontColor=#5B21B6;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="services" target="database">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-engine-db-label" value="JDBC&#xa;lecture / écriture" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#5B21B6;labelBackgroundColor=#FAFAFA;fontStyle=1;" connectable="0" vertex="1" parent="e-engine-db">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Async executor -> Database -->
+        <mxCell id="e-async-db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7C3AED;strokeWidth=1.5;endArrow=classic;fontSize=10;fontColor=#5B21B6;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;dashed=1;dashPattern=4 2;" edge="1" parent="1" source="async-executor" target="database">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="510" />
+              <mxPoint x="1290" y="465" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-async-db-label" value="poll jobs" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#5B21B6;labelBackgroundColor=#FAFAFA;" connectable="0" vertex="1" parent="e-async-db">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Microservice -> Monitoring -->
+        <mxCell id="e-micro-mon" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1F2937;strokeWidth=1.5;endArrow=classic;fontSize=10;fontColor=#475569;labelBackgroundColor=#FAFAFA;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=4 2;" edge="1" parent="1" source="microservice-container" target="monitoring">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-micro-mon-label" value="/actuator/prometheus" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=10;fontColor=#475569;labelBackgroundColor=#FAFAFA;fontFamily=monospace;" connectable="0" vertex="1" parent="e-micro-mon">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ========== LEGEND ========== -->
+        <mxCell id="legend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;strokeWidth=1;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="60" y="760" width="1470" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-title" value="LÉGENDE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontStyle=1;fontColor=#6B7280;" vertex="1" parent="1">
+          <mxGeometry x="80" y="770" width="200" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Legend items -->
+        <mxCell id="legend-actor" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;strokeWidth=2;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="80" y="805" width="40" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-actor-text" value="Acteur / système externe" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="130" y="805" width="200" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1D4ED8;strokeWidth=2;dashed=1;dashPattern=8 4;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="320" y="805" width="40" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-container-text" value="Container (microservice déployable)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="370" y="805" width="240" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-springboot" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;strokeWidth=1.5;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="620" y="805" width="40" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-springboot-text" value="Composant Spring Boot applicatif" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="670" y="805" width="220" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-engine" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDF4;strokeColor=#047857;strokeWidth=1.5;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="900" y="805" width="40" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-engine-text" value="Composant Flowable Engine" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="950" y="805" width="200" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-rest-line" value="" style="endArrow=classic;html=1;strokeColor=#1D4ED8;strokeWidth=2;dashed=1;dashPattern=6 3;fontSize=10;" edge="1" parent="1">
+          <mxGeometry width="40" relative="1" as="geometry">
+            <mxPoint x="80" y="852" as="sourcePoint" />
+            <mxPoint x="120" y="852" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-rest-text" value="Appel REST / HTTP" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="130" y="843" width="180" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-jdbc-line" value="" style="endArrow=classic;html=1;strokeColor=#7C3AED;strokeWidth=2;fontSize=10;" edge="1" parent="1">
+          <mxGeometry width="40" relative="1" as="geometry">
+            <mxPoint x="320" y="852" as="sourcePoint" />
+            <mxPoint x="360" y="852" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-jdbc-text" value="Persistance JDBC" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="370" y="843" width="220" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-internal-line" value="" style="endArrow=classic;html=1;strokeColor=#1F2937;strokeWidth=1.5;fontSize=10;" edge="1" parent="1">
+          <mxGeometry width="40" relative="1" as="geometry">
+            <mxPoint x="620" y="852" as="sourcePoint" />
+            <mxPoint x="660" y="852" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-internal-text" value="Dépendance / flux interne" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="670" y="843" width="220" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-deploy-line" value="" style="endArrow=classic;html=1;strokeColor=#047857;strokeWidth=2;fontSize=10;" edge="1" parent="1">
+          <mxGeometry width="40" relative="1" as="geometry">
+            <mxPoint x="900" y="852" as="sourcePoint" />
+            <mxPoint x="940" y="852" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-deploy-text" value="Auto-deploy classpath" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#334155;" vertex="1" parent="1">
+          <mxGeometry x="950" y="843" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Footer -->
+        <mxCell id="footer" value="Architecture Flowable BPMN · diagramme C4 niveau 2 (Container) · El Hadi — CPDP team" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=10;fontColor=#94A3B8;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="900" width="1500" height="20" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
