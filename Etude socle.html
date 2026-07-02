@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Étude d'architecture — Socle Data / Card Payment Data Platform : Ingestion &amp; Modèle Organisé</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Arial, sans-serif; color: #172B4D; margin: 0; background: #fff; line-height: 1.55; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 32px 40px 80px 40px; }
+  h1 { font-size: 26px; color: #172B4D; border-bottom: 3px solid #1168BD; padding-bottom: 10px; }
+  h2 { font-size: 21px; color: #1F3864; margin-top: 44px; border-bottom: 1px solid #DFE1E6; padding-bottom: 6px; }
+  h3 { font-size: 17px; color: #1F3864; margin-top: 30px; }
+  h4 { font-size: 14.5px; color: #42526E; margin-top: 22px; text-transform: uppercase; letter-spacing: .4px; }
+  p, li { font-size: 14px; }
+  .meta { background: #F4F5F7; border: 1px solid #DFE1E6; border-radius: 4px; padding: 10px 16px; font-size: 12.5px; color: #42526E; display: flex; gap: 22px; flex-wrap: wrap; margin: 18px 0 8px 0;}
+  .badge { background: #DEEBFF; color: #0747A6; border-radius: 3px; padding: 1px 7px; font-size: 11.5px; font-weight: 600; }
+  .badge.green { background: #E3FCEF; color: #006644; }
+  .badge.purple { background: #EAE6FF; color: #403294; }
+  .badge.gray { background: #EBECF0; color: #42526E; }
+  .toc { background: #FAFBFC; border: 1px solid #DFE1E6; border-radius: 4px; padding: 16px 24px; margin: 22px 0; }
+  .toc ul { list-style: none; padding-left: 0; margin: 6px 0; }
+  .toc li { margin: 3px 0; font-size: 13.5px; }
+  .toc .l2 { padding-left: 18px; }
+  .toc .l3 { padding-left: 36px; color: #42526E; }
+  .toc a { color: #0052CC; text-decoration: none; }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 13px; }
+  th { background: #F4F5F7; text-align: left; padding: 8px 10px; border: 1px solid #DFE1E6; color: #42526E; }
+  td { padding: 8px 10px; border: 1px solid #DFE1E6; vertical-align: top; }
+  .col-key { font-weight: 600; white-space: nowrap; }
+  .panel { border-radius: 4px; margin: 16px 0; border: 1px solid; }
+  .panel-header { font-weight: 700; padding: 8px 14px; font-size: 13.5px; border-bottom: 1px solid; }
+  .panel-body { padding: 10px 14px; font-size: 13.5px; }
+  .panel.info    { border-color: #B3D4FF; } .panel.info .panel-header { background:#DEEBFF; color:#0747A6; border-color:#B3D4FF; }
+  .panel.warning { border-color: #FFE380; } .panel.warning .panel-header { background:#FFFAE6; color:#974F0C; border-color:#FFE380; }
+  .panel.success { border-color: #ABF5D1; } .panel.success .panel-header { background:#E3FCEF; color:#006644; border-color:#ABF5D1; }
+  .panel.error   { border-color: #FFBDAD; } .panel.error .panel-header { background:#FFEBE6; color:#BF2600; border-color:#FFBDAD; }
+  .code-macro { border: 1px solid #DFE1E6; border-radius: 4px; margin: 14px 0; overflow: hidden; }
+  .code-macro-header { background: #F4F5F7; padding: 6px 12px; font-size: 12px; color: #42526E; font-weight: 600; border-bottom: 1px solid #DFE1E6; }
+  .code-macro-body { background: #172B4D; }
+  .code-macro-body pre { margin: 0; padding: 14px 16px; color: #E6EDF7; font-family: "SFMono-Regular", Consolas, monospace; font-size: 12.3px; line-height: 1.5; overflow-x: auto; }
+  .kw { color: #7EE0B8; } .st { color: #FFD580; } .cm { color: #8A9BB8; font-style: italic; } .nm { color: #9CC7FF; } .cl { color: #C5A3FF; }
+  .ascii { background: #FAFBFC; border: 1px solid #DFE1E6; border-radius: 4px; padding: 14px 16px; font-family: Consolas, monospace; font-size: 12px; line-height: 1.42; overflow-x: auto; white-space: pre; color: #172B4D; margin: 14px 0; }
+  code { background: #F4F5F7; border-radius: 3px; padding: 1px 5px; font-family: Consolas, monospace; font-size: 12.5px; color: #172B4D; }
+  .kv-box { background: #FAFBFC; border: 1px dashed #C1C7D0; border-radius: 4px; padding: 12px 16px; font-family: Consolas, monospace; font-size: 12.5px; line-height: 1.6; margin: 14px 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<h1>Étude d'architecture — Socle Data / Card Payment Data Platform<br>
+<span style="font-size:17px; font-weight:400; color:#42526E;">Ingestion sous contrat, Raw Lake Iceberg, Alimentation MongoDB &amp; Modèle Organisé (v1 → v2)</span></h1>
+
+<div class="meta">
+  <span>Version : <span class="badge gray">v1.0</span></span>
+  <span>Date : Juillet 2026</span>
+  <span>Owner : Architecture — CPDP</span>
+  <span>Labels :
+    <span class="badge">ingestion</span>
+    <span class="badge">kafka</span>
+    <span class="badge purple">iceberg</span>
+    <span class="badge">mongodb</span>
+    <span class="badge green">organized-layer</span>
+    <span class="badge green">data-contract</span>
+  </span>
+</div>
+
+<div class="toc">
+  <b>Sommaire</b>
+  <ul>
+    <li><a href="#s0">0. Contexte, périmètre et principes directeurs</a></li>
+    <li><a href="#s1">1. Ingestion</a></li>
+    <li class="l2"><a href="#s1-1">1.1 Le contrat d'ingestion — et sa distinction avec le modèle organisé</a></li>
+    <li class="l2"><a href="#s1-2">1.2 Pipeline 1 — Stockage Raw : Kafka (Avro/JSON) → Parquet / Iceberg</a></li>
+    <li class="l3"><a href="#s1-2-1">1.2.1 Des messages unitaires aux fichiers Parquet</a></li>
+    <li class="l3"><a href="#s1-2-2">1.2.2 Mécanique de commit Iceberg et mise à jour du catalogue</a></li>
+    <li class="l3"><a href="#s1-2-3">1.2.3 Stratégie de partitionnement Iceberg</a></li>
+    <li class="l3"><a href="#s1-2-4">1.2.4 Maintenance des tables (compaction, snapshots)</a></li>
+    <li class="l2"><a href="#s1-3">1.3 Pipeline 2 — Alimentation de la base transactionnelle MongoDB</a></li>
+    <li class="l3"><a href="#s1-3-1">1.3.1 Choix des clés de production Kafka</a></li>
+    <li class="l3"><a href="#s1-3-2">1.3.2 Dimensionnement du nombre de partitions</a></li>
+    <li class="l3"><a href="#s1-3-3">1.3.3 La corrélation sécurisée à l'ingestion — jamais au processing</a></li>
+    <li class="l3"><a href="#s1-3-4">1.3.4 Consolidation désynchronisée et détection proactive des orphelins</a></li>
+    <li><a href="#s2">2. Le modèle organisé</a></li>
+    <li class="l2"><a href="#s2-1">2.1 Indépendance sémantique vis-à-vis des producteurs</a></li>
+    <li class="l2"><a href="#s2-2">2.2 État actuel — modèle v1 simplifié</a></li>
+    <li class="l2"><a href="#s2-3">2.3 Modèle cible v2 — le métier de l'acquisition</a></li>
+    <li class="l2"><a href="#s2-4">2.4 Stratégie de migration v1 → v2 sans rupture de service</a></li>
+    <li><a href="#s3">3. Synthèse des principes d'architecture</a></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="s0">0. Contexte, périmètre et principes directeurs</h2>
+
+<p>La Card Payment Data Platform (CPDP, « socle data ») centralise les données de l'acquisition monétique — transactions, autorisations, captures, remises, chargebacks, fraude — produites par des systèmes hétérogènes (NEPTING, K2/Partecis via BCEF-IT/DHF, E-Stream, Computop, fichiers batch IBM COS) et les met à disposition des consommateurs : Accepta Vision Portal, plateforme de reporting Axepta, extractions réglementaires et comptables.</p>
+
+<p>La présente étude pose les fondations du socle sur deux volets : <b>l'ingestion</b> (contrats, pipeline raw vers Iceberg, pipeline transactionnelle vers MongoDB, corrélation) et <b>le modèle organisé</b> (indépendance sémantique, trajectoire v1 → v2). Le volet <b>exposition et extraction de rapports volumineux</b> est traité dans une étude dédiée.</p>
+
+<div class="panel info">
+  <div class="panel-header">Principe fondateur — deux représentations, une seule vérité</div>
+  <div class="panel-body">
+    <p>La même donnée existe dans deux représentations physiques, alimentées en parallèle depuis Kafka et optimisées pour des usages opposés :</p>
+    <ul>
+      <li>Le <b>Raw Lake Iceberg/Parquet</b> : capture immuable et exhaustive des événements tels que reçus. Source de vérité éternelle, rejouable, jamais modifiée. Socle des analyses, des reconstructions et des migrations.</li>
+      <li>Le <b>modèle organisé MongoDB</b> : représentation structurée, corrélée, dans le langage métier de l'acquisition. Optimisée pour la lecture chaude et l'exposition.</li>
+    </ul>
+    <p>Chaque zone est alimentée <b>par projection depuis le flux</b>, jamais par copie latérale entre zones servies. Ce découplage est ce qui rendra la migration v1 → v2 du modèle organisé possible sans drame (cf. §2.4).</p>
+  </div>
+</div>
+
+<div class="ascii">                          PRODUCTEURS
+     NEPTING (ISN/Apigee)   K2/Partecis via DHF   E-Stream   Computop   IBM COS (batch)
+            │                     │                  │           │           │
+            └───────────┬─────────┴──────────┬───────┴───────────┴───────────┘
+                        ▼                    ▼
+              ╔══════════════════════════════════════════╗
+              ║   CONTRATS D'INGESTION (Avro / Registry)  ║   ← frontière contractuelle
+              ╚══════════════════════════════════════════╝
+                        │
+                 KAFKA — topics d'ingestion
+                 (clé = identité de corrélation, 64–128 partitions)
+                        │
+        ┌───────────────┴───────────────────┐
+        │  consumer group :                  │  consumer group :
+        │  raw-lake-writer                   │  organized-writer
+        ▼                                    ▼
+  ┌──────────────────────┐        ┌───────────────────────────┐
+  │  RAW LAKE            │        │  MODÈLE ORGANISÉ          │
+  │  Iceberg + Parquet   │        │  MongoDB                  │
+  │  (S3 / COS / HDFS)   │        │  transactions, remises,   │
+  │  immuable, rejouable │──────▶ │  chargebacks (v1 → v2)    │
+  │  partition: jour     │ replay │  upserts idempotents      │
+  └──────────────────────┘        └───────────────────────────┘
+        │                                    │
+        ▼                                    ▼
+   Analytique / Reporting              Exposition APIs
+   (Starburst — étude dédiée)          (Vision Portal — étude dédiée)</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="s1">1. Ingestion</h2>
+
+<h3 id="s1-1">1.1 Le contrat d'ingestion — et sa distinction avec le modèle organisé</h3>
+
+<p>Le contrat d'ingestion est un <b>accord formel, versionné et testable</b> entre chaque producteur et la plateforme. Il n'est pas une page de documentation : c'est un artefact de code (schémas Avro dans un Schema Registry, règles de qualité exécutables) dont la violation est détectée automatiquement, à la frontière, avant toute ingestion.</p>
+
+<h4>Ce que le contrat spécifie</h4>
+<table>
+  <thead><tr><th>Dimension</th><th>Contenu contractuel</th></tr></thead>
+  <tbody>
+    <tr><td class="col-key">Schéma</td><td>Schéma Avro versionné dans le Schema Registry (un subject par topic). Format de transport : Avro binaire (recommandé) ou JSON validé contre le schéma. Politique d'évolution : <code>BACKWARD_TRANSITIVE</code> — un producteur ne peut jamais publier un changement qui casserait les consommateurs existants.</td></tr>
+    <tr><td class="col-key">Identités</td><td><code>event_id</code> globalement unique (idempotence), <code>event_type</code> (AUTHORIZATION, CAPTURE, REMITTANCE, CHARGEBACK, FRAUD…), <code>source_system</code>.</td></tr>
+    <tr><td class="col-key">Clés de corrélation</td><td><b>Obligatoires dès la production</b> : identifiant de transaction / Correlation ID (lien autorisation ↔ capture), référence de remise, référence de fichier (références d'estampillage). Un événement sans ses clés de corrélation est rejeté à la frontière — voir §1.3.3, c'est la clef de voûte du pipeline.</td></tr>
+    <tr><td class="col-key">Temporalité</td><td>Distinction contractuelle entre <code>business_time</code> (l'heure métier de l'événement) et <code>produced_at</code> (l'heure de publication). Toute la logique temporelle du socle s'ancre sur <code>business_time</code>.</td></tr>
+    <tr><td class="col-key">Qualité</td><td>Complétude des champs obligatoires, unicité de <code>event_id</code>, fraîcheur (SLA de latence de publication après l'événement métier), ordre de publication par clé.</td></tr>
+    <tr><td class="col-key">Canal d'erreur</td><td>Comportement en cas de rejet : DLQ dédiée par producteur, rapport de non-conformité, boucle de remédiation (cf. §1.3.4).</td></tr>
+  </tbody>
+</table>
+
+<h4>La distinction fondamentale : contrat d'ingestion ≠ modèle organisé</h4>
+
+<p>Le contrat d'ingestion capture la donnée <b>dans la sémantique du producteur</b> : le vocabulaire E-Stream (inspiré ISO 20022), les codes K2, les champs NEPTING. Le modèle organisé exprime la donnée <b>dans le langage métier de l'acquisition</b>, unique et indépendant des producteurs (cf. §2.1). Entre les deux se trouve une couche de traduction explicite — le <b>mapping d'ingestion</b> — elle aussi versionnée et testée.</p>
+
+<div class="ascii">   Sémantique PRODUCTEUR              TRADUCTION               Sémantique MÉTIER
+  ┌────────────────────────┐   ┌─────────────────────┐   ┌─────────────────────────┐
+  │  CONTRAT D'INGESTION   │   │  MAPPING D'INGESTION │   │   MODÈLE ORGANISÉ       │
+  │  (Avro, par producteur)│──▶│  (anti-corruption    │──▶│   (pivot acquisition,   │
+  │  E-Stream / K2 / NEPT. │   │   layer, versionné,  │   │    unique, versionné)   │
+  │                        │   │   golden tests)      │   │                         │
+  └────────────────────────┘   └─────────────────────┘   └─────────────────────────┘</div>
+
+<div class="panel warning">
+  <div class="panel-header">Anti-pattern à proscrire — la fuite sémantique</div>
+  <div class="panel-body"><p>Si les champs et concepts des producteurs fuient directement dans le modèle organisé (« le champ 422 d'E-Stream », « le code retour K2 »), le modèle devient l'<b>union des formats des producteurs</b> : chaque nouveau producteur le déforme, chaque évolution amont le casse, et les consommateurs doivent connaître les systèmes sources pour l'interpréter. Le contrat absorbe la sémantique producteur ; le mapping la traduit ; le modèle organisé l'ignore. La provenance est conservée uniquement dans des champs techniques de lineage (<code>source_system</code>, <code>source_message_ref</code>, <code>ingestion_schema_version</code>), jamais dans la sémantique métier.</p></div>
+</div>
+
+<h4>Gouvernance du contrat</h4>
+<ul>
+  <li><b>Le contrat est du code</b> : fichiers <code>.avsc</code> dans Git, revue obligatoire, CI qui valide la compatibilité contre le Registry avant tout déploiement producteur.</li>
+  <li><b>Golden samples</b> : chaque producteur fournit un jeu de messages de référence (cas nominaux + cas limites). Ces échantillons alimentent les tests automatiques du mapping d'ingestion.</li>
+  <li><b>Évolution</b> : tout changement de schéma suit la procédure — proposition, revue plateforme + producteur, publication d'une nouvelle version compatible, dépréciation planifiée des champs retirés.</li>
+  <li><b>Le Business Analyst facilite, la CI valide</b> : le BA anime la rédaction du contrat avec le producteur et l'ingénierie ; la conformité n'est plus une affaire de prose Confluence mais de tests exécutés à chaque build.</li>
+</ul>
+
+<h3 id="s1-2">1.2 Pipeline 1 — Stockage Raw : Kafka (Avro/JSON) → Parquet / Iceberg</h3>
+
+<p>Objectif : capturer <b>tous</b> les événements, tels que reçus, dans un stockage immuable, peu coûteux, requêtable en SQL et rejouable. Le Raw Lake est le filet de sécurité de la plateforme : toute projection (dont le modèle organisé lui-même) peut être reconstruite depuis lui. Format de fichiers : <b>Parquet</b> ; format de table : <b>Apache Iceberg</b>.</p>
+
+<h4 id="s1-2-1">1.2.1 Des messages unitaires aux fichiers Parquet — le problème et sa résolution</h4>
+
+<p>Parquet est un format <b>colonnaire par blocs</b> : il est conçu pour être écrit par gros lots et lu par colonnes, pas pour être écrit message par message. Écrire un fichier par événement produirait des millions de « small files » qui détruisent les performances de lecture (chaque fichier = un open/close S3, des métadonnées, un footer) et font exploser les métadonnées Iceberg. Le passage du flux unitaire Kafka au fichier Parquet repose donc sur un <b>tampon d'accumulation</b> :</p>
+
+<div class="ascii">  Kafka (messages unitaires Avro)
+      │  poll() en continu
+      ▼
+  ┌──────────────────────────────────────────────────────┐
+  │  WRITER (Kafka Connect / Flink)                      │
+  │                                                      │
+  │  1. Désérialisation Avro (Schema Registry)           │
+  │  2. Routage vers la table/partition Iceberg cible    │
+  │     (par event_type, par jour de business_time)      │
+  │  3. ACCUMULATION en mémoire / fichiers ouverts        │
+  │     un writer Parquet ouvert par (table, partition)   │
+  │  4. FLUSH quand seuil atteint :                       │
+  │     - taille cible du fichier (128–512 Mo)            │
+  │     - OU fin d'intervalle de commit (2–5 min)         │
+  │  → data files Parquet fermés, prêts à être commités   │
+  └──────────────────────────────────────────────────────┘
+      │
+      ▼  COMMIT ICEBERG (atomique, cf. §1.2.2)
+  Table Iceberg — nouveaux fichiers visibles d'un coup</div>
+
+<p>Deux implémentations de référence :</p>
+<table>
+  <thead><tr><th>Option</th><th>Fonctionnement</th><th>Quand la choisir</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="col-key">Kafka Connect —<br>Iceberg Sink Connector</td>
+      <td>Les workers Connect consomment, bufferisent et écrivent les data files Parquet. Un <b>coordinateur de commit</b> agrège les fichiers produits par tous les workers et réalise un commit Iceberg unique à intervalle fixe (<code>iceberg.control.commit.interval-ms</code>, typ. 120 000–300 000 ms). Les <b>offsets Kafka sont consignés dans les propriétés du snapshot</b> : en cas de crash, le connector reprend depuis le dernier commit → sémantique exactly-once. Supporte le <b>fan-out multi-tables</b> (router chaque event_type vers sa table) et la création automatique de tables avec évolution de schéma.</td>
+      <td><b>Recommandé pour le raw</b> : aucune transformation, configuration déclarative, pas de code à maintenir.</td>
+    </tr>
+    <tr>
+      <td class="col-key">Flink — Iceberg Sink</td>
+      <td>Les fichiers sont écrits en continu ; le commit Iceberg est aligné sur les <b>checkpoints Flink</b> (exactly-once bout en bout via two-phase commit). Latence et fréquence de commit pilotées par l'intervalle de checkpoint.</td>
+      <td>Si un enrichissement ou une normalisation en vol devient nécessaire avant le raw (à éviter par principe : le raw doit rester brut).</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="panel warning">
+  <div class="panel-header">Règle — la fréquence de commit est un compromis fraîcheur / small-files</div>
+  <div class="panel-body"><p>Commiter toutes les 2 à 5 minutes donne un lake frais à quelques minutes — largement suffisant pour un raw analytique — tout en produisant des fichiers de taille saine. Ne jamais chercher la « fraîcheur seconde » sur le lake : c'est le rôle du pipeline MongoDB (§1.3). Un commit par message ou par petit lot est l'erreur classique qui rend une table Iceberg inexploitable en six mois.</p></div>
+</div>
+
+<h4>Enveloppe raw — schéma des tables</h4>
+<p>Chaque table raw porte une enveloppe standard, identique pour tous les types d'événements, plus le payload dans la sémantique du producteur (le raw ne traduit rien) :</p>
+<div class="kv-box">event_id            string   — identité unique (idempotence, dédoublonnage)<br>
+event_type          string   — AUTHORIZATION | CAPTURE | REMITTANCE | CHARGEBACK | FRAUD | …<br>
+source_system       string   — ESTREAM | K2 | NEPTING | COMPUTOP | BATCH_COS<br>
+schema_version      string   — version du contrat d'ingestion appliqué<br>
+business_time       timestamp — heure métier (colonne de partitionnement)<br>
+produced_at         timestamp — heure de publication Kafka<br>
+ingested_at         timestamp — heure d'écriture lake<br>
+correlation         struct   — { transaction_id, correlation_id, remittance_ref, file_ref, siren, rib, store_id }<br>
+kafka               struct   — { topic, partition, offset }  — traçabilité de rejeu<br>
+payload             struct   — le message producteur, intégral, non traduit</div>
+
+<h4 id="s1-2-2">1.2.2 Mécanique de commit Iceberg et mise à jour du catalogue</h4>
+
+<p>Comprendre la mécanique interne d'Iceberg est indispensable pour dimensionner la maintenance. Une table Iceberg est un <b>arbre de métadonnées immuables</b> pointé par le catalogue :</p>
+
+<div class="ascii">  CATALOGUE (REST / Nessie / Glue / Hive Metastore)
+      │  ne stocke qu'UNE chose par table :
+      │  le pointeur vers le metadata.json courant
+      ▼
+  metadata.json (vN) ── schéma, partition spec, historique des snapshots
+      │
+      ▼
+  manifest-list (du snapshot courant) ── liste des manifests + stats de partition
+      │
+      ├──▶ manifest-file A ── liste de data files + stats min/max par colonne
+      │        ├──▶ data-file-001.parquet
+      │        └──▶ data-file-002.parquet
+      └──▶ manifest-file B
+               └──▶ data-file-003.parquet
+
+  UN COMMIT =
+   1. écrire les nouveaux data files Parquet          (invisible pour les lecteurs)
+   2. écrire un nouveau manifest les référençant       (invisible)
+   3. écrire une nouvelle manifest-list = snapshot N+1 (invisible)
+   4. écrire metadata.json vN+1                        (invisible)
+   5. CAS atomique sur le catalogue :
+      « remplace le pointeur vN par vN+1 si le courant est toujours vN »
+      → concurrence optimiste : en cas de conflit, relecture + retry
+      → les lecteurs voient l'ancien snapshot OU le nouveau, jamais un état partiel</div>
+
+<p>Conséquences pratiques :</p>
+<ul>
+  <li><b>Snapshot isolation gratuite</b> : une requête Starburst démarrée pendant un commit lit un snapshot cohérent de bout en bout.</li>
+  <li><b>Time travel natif</b> : chaque commit est un snapshot horodaté ; on peut requêter la table « telle qu'elle était » à un instant passé — précieux pour l'audit et la réconciliation comptable.</li>
+  <li><b>Le catalogue est critique mais léger</b> : il ne fait que le CAS du pointeur. Recommandation : un catalogue <b>REST</b> (standard d'interopérabilité 2025+, supporté par Starburst, Spark, Flink, Kafka Connect) adossé à un backend HA.</li>
+  <li><b>Exactly-once du connector</b> : les offsets Kafka étant stockés dans les propriétés du snapshot, offset-commit et data-commit sont <b>le même acte atomique</b> — pas de fenêtre de double écriture ni de perte.</li>
+</ul>
+
+<h4 id="s1-2-3">1.2.3 Stratégie de partitionnement Iceberg</h4>
+
+<p>Iceberg pratique le <b>hidden partitioning</b> : la partition est déclarée comme une <i>transformation</i> d'une colonne (<code>days(business_time)</code>), les fichiers sont physiquement organisés selon cette transformation, et les requêtes filtrant sur <code>business_time</code> bénéficient du pruning <b>sans jamais manipuler de colonne de partition</b>. C'est un avantage décisif sur le partitionnement Hive (pas de colonne technique <code>dt=2026-07-01</code> à connaître, pas d'erreur de requête possible).</p>
+
+<table>
+  <thead><tr><th>Décision</th><th>Choix recommandé</th><th>Justification</th></tr></thead>
+  <tbody>
+    <tr><td class="col-key">Granularité des tables</td><td><b>Une table par type d'événement</b> : <code>authorizations_raw</code>, <code>captures_raw</code>, <code>remittances_raw</code>, <code>chargebacks_raw</code>, <code>fraud_raw</code> (fan-out du connector par <code>event_type</code>).</td><td>Schémas de payload hétérogènes ; extractions mono-mouvement directes (leçon du besoin « autorisations seules » — cf. étude exposition) ; volumes et rétentions différenciés.</td></tr>
+    <tr><td class="col-key">Partition principale</td><td><code>days(business_time)</code></td><td>Toutes les requêtes analytiques et tous les backfills filtrent par période métier. Aligné sur la logique jour ouvré des remises.</td></tr>
+    <tr><td class="col-key">Sous-partition</td><td><b>Aucune au démarrage.</b> Pas de <code>identity(source_system)</code>, pas de <code>bucket()</code> par défaut.</td><td>La sur-partition est l'erreur n°1 : elle multiplie les petits fichiers (jours × sources × buckets). Les stats min/max par colonne des manifests assurent déjà un pruning efficace sur <code>source_system</code> ou <code>store_id</code>.</td></tr>
+    <tr><td class="col-key">Évolution</td><td>Si un pattern de lecture massif l'exige plus tard : <code>bucket(transaction_id, 32)</code> ajouté par <b>partition evolution</b>.</td><td>Iceberg fait évoluer la partition spec <b>par métadonnées, sans réécrire l'historique</b> : les anciennes données gardent l'ancienne spec, les nouvelles adoptent la nouvelle. Décision réversible — donc à ne pas prendre prématurément.</td></tr>
+    <tr><td class="col-key">Tri intra-fichier</td><td><code>write.sort-order</code> = (business_time, store_id)</td><td>Améliore la compression et le pruning fin par pages Parquet pour les filtres commerçant.</td></tr>
+  </tbody>
+</table>
+
+<h4 id="s1-2-4">1.2.4 Maintenance des tables — non optionnelle</h4>
+
+<p>Un flux continu produit mécaniquement des fichiers plus petits que l'optimal et une accumulation de snapshots. La maintenance est un <b>composant de l'architecture</b>, planifié dès le premier jour :</p>
+
+<table>
+  <thead><tr><th>Procédure</th><th>Rôle</th><th>Cadence recommandée</th></tr></thead>
+  <tbody>
+    <tr><td class="col-key">rewrite_data_files</td><td>Compaction : fusionne les petits fichiers vers la taille cible (256–512 Mo), applique le sort-order.</td><td>Quotidienne, sur la partition J-1 (les partitions closes ne bougent plus).</td></tr>
+    <tr><td class="col-key">expire_snapshots</td><td>Purge les snapshots anciens et les fichiers qu'ils étaient seuls à référencer. Borne le time travel.</td><td>Quotidienne — rétention 7 jours de snapshots (le rejeu long terme se fait sur l'état courant, pas sur les snapshots).</td></tr>
+    <tr><td class="col-key">rewrite_manifests</td><td>Réorganise les manifests pour un pruning optimal quand ils se fragmentent.</td><td>Hebdomadaire.</td></tr>
+    <tr><td class="col-key">remove_orphan_files</td><td>Supprime les fichiers écrits mais jamais commités (crashs de writers).</td><td>Hebdomadaire, avec garde de sécurité &gt; 3 jours.</td></tr>
+  </tbody>
+</table>
+
+<div class="panel success">
+  <div class="panel-header">Ce que le Raw Lake apporte au reste de l'étude</div>
+  <div class="panel-body"><p>Rejouabilité totale : le pipeline MongoDB peut être reconstruit, un bug de mapping peut être corrigé puis rejoué, et surtout — c'est l'argument central du §2.4 — <b>la v2 du modèle organisé peut être alimentée par re-projection depuis le raw</b>, plutôt que par une migration base-à-base qui transporterait les défauts de la v1.</p></div>
+</div>
+
+
+<h3 id="s1-3">1.3 Pipeline 2 — Alimentation de la base transactionnelle MongoDB (modèle organisé)</h3>
+
+<p>Ce pipeline transforme le flux d'événements en documents du modèle organisé : upserts corrélés dans les collections MongoDB, à fort débit, avec une exigence de fraîcheur bien supérieure au lake (secondes à minutes). Sa performance repose sur trois décisions prises <b>en amont du consumer</b> : la clé de production, le nombre de partitions, et la corrélation portée par l'événement.</p>
+
+<h4 id="s1-3-1">1.3.1 Choix des clés de production Kafka — une décision d'architecture, pas un détail</h4>
+
+<p>La clé du message Kafka détermine la partition d'affectation, donc <b>l'ordre de traitement</b> et <b>la localité</b> : tous les messages d'une même clé arrivent ordonnés sur la même partition et sont traités par le même consumer. C'est cette propriété qui permet des écritures MongoDB sans lecture préalable (§1.3.3).</p>
+
+<table>
+  <thead><tr><th>Candidat de clé</th><th>Verdict</th><th>Analyse</th></tr></thead>
+  <tbody>
+    <tr><td class="col-key">transaction_id /<br>correlation_id</td><td><span class="badge green">RECOMMANDÉ</span></td><td>Tous les mouvements d'une même transaction (autorisation, capture, compensation, chargeback) convergent ordonnés vers la même partition → le consumer voit le cycle de vie d'une transaction séquentiellement, les upserts sur le document cible ne se concurrencent jamais entre partitions. Cardinalité très élevée (dizaines de millions) → répartition statistiquement uniforme.</td></tr>
+    <tr><td class="col-key">store_id / merchant_id</td><td><span class="badge" style="background:#FFEBE6;color:#BF2600;">À PROSCRIRE</span></td><td>Crée des <b>hot partitions</b> : un grand commerçant (type Castorama, dizaines de milliers de transactions/jour) concentre son trafic sur une seule partition, qui devient le goulot du pipeline entier pendant que les autres sont vides.</td></tr>
+    <tr><td class="col-key">Clé nulle (round-robin)</td><td><span class="badge" style="background:#FFEBE6;color:#BF2600;">À PROSCRIRE</span></td><td>Répartition parfaite mais <b>aucune garantie d'ordre</b> : la capture peut être traitée avant l'autorisation par deux consumers concurrents, avec deux upserts simultanés sur le même document → conditions de course sur MongoDB.</td></tr>
+    <tr><td class="col-key">Remises (cas particulier)</td><td><span class="badge">clé = remittance_ref</span></td><td>Les remises étant des objets indépendants (cf. §2.3), leur topic est keyé sur la référence de remise ; le lien vers les transactions est porté par les données, pas par le partitionnement.</td></tr>
+  </tbody>
+</table>
+
+<div class="panel error">
+  <div class="panel-header">Exigence contractuelle envers les producteurs</div>
+  <div class="panel-body"><p>La clé de production fait <b>partie du contrat d'ingestion</b> (§1.1). Un producteur qui publie avec une mauvaise clé — ou sans clé — casse silencieusement l'ordre et la localité : le défaut n'apparaît qu'en charge, sous forme de documents incohérents. La clé exigée, sa provenance dans le payload et sa cardinalité sont donc validées à la revue de contrat, et monitorées (distribution des messages par partition).</p></div>
+</div>
+
+<h4 id="s1-3-2">1.3.2 Dimensionnement du nombre de partitions — large, dès la création</h4>
+
+<p>Le nombre de partitions borne le parallélisme maximal des consumers (au-delà, les consumers sont inactifs) et se décide <b>à la création du topic</b>. Règles de dimensionnement :</p>
+
+<div class="kv-box">Débit de dimensionnement :   pic soutenu × facteur de reprise (backlog replay) ≈ 3–5×<br>
+Capacité prudente/partition : 5–10 Mo/s ou quelques milliers de msg/s (selon taille des messages)<br>
+Parallélisme consumer :       nb consumers actifs max = nb partitions<br><br>
+Exemple CPDP — topic transactions enrichies :<br>
+  pic estimé 2 000 msg/s × reprise 4× = 8 000 msg/s cible<br>
+  ÷ ~500 msg/s de traitement MongoDB par consumer thread (upserts batchés)<br>
+  → 16 consumers minimum → <b>64 partitions</b> retenues (marge de croissance ×4)<br><br>
+Recommandation : <b>64 partitions minimum</b> sur les topics transactionnels,<br>
+<b>128</b> sur les topics à plus forte volumétrie (autorisations).</div>
+
+<div class="panel warning">
+  <div class="panel-header">Pourquoi surdimensionner d'emblée — l'augmentation ultérieure casse l'affectation par clé</div>
+  <div class="panel-body"><p>Augmenter le nombre de partitions d'un topic existant change le résultat de <code>hash(clé) % nb_partitions</code> : les événements d'une même transaction, jusque-là routés vers la partition 12, partent désormais vers la partition 47 — <b>pendant que d'anciens événements de la même clé restent en attente sur la partition 12</b>. L'ordre par clé est rompu de façon transitoire, précisément la garantie sur laquelle repose tout le pipeline. La seule stratégie saine : dimensionner large à la création (le coût d'une partition surnuméraire est négligeable), et considérer un repartitionnement ultérieur comme une migration à part entière (nouveau topic + bascule contrôlée).</p></div>
+</div>
+
+<h4 id="s1-3-3">1.3.3 La corrélation sécurisée à l'ingestion — jamais au processing</h4>
+
+<p>C'est la décision la plus structurante du pipeline. Deux philosophies s'opposent :</p>
+
+<div class="ascii">  ── ANTI-PATTERN : corrélation AU PROCESSING (lookup bloquant) ──────────────────
+
+  pour chaque événement consommé :
+      parent = mongodb.findOne({ ... })        ← appel réseau UNITAIRE, BLOQUANT
+      si parent trouvé : rattacher, écrire
+      sinon : réessayer plus tard / mettre de côté
+
+  Conséquences mesurables :
+   · ~1–3 ms de RTT par lookup × millions d'événements/jour
+   · débit consumer plafonné par la latence MongoDB, pas par Kafka
+   · le lag s'accumule dès le premier ralentissement de la base (backpressure)
+   · à la reprise d'un backlog : effondrement (chaque événement rejoué re-paye le lookup)
+
+  ── PATTERN CIBLE : corrélation À L'INGESTION (portée par l'événement) ──────────
+
+  le contrat (§1.1) garantit que l'événement PORTE ses clés :
+      transaction_id, correlation_id, remittance_ref, file_ref
+
+  le consumer écrit alors en AVEUGLE, sans aucune lecture préalable :
+      bulkWrite(ordered=false) de updateOne(
+         filter : { _id: transaction_id },
+         update : { $setOnInsert: {squelette}, $set: {champs},
+                    $push / $set positionnel : mouvement },
+         upsert : true )
+
+   · zéro lecture dans le chemin chaud — le débit est celui de bulkWrite batché
+   · idempotent et rejouable (event_id + gardes de version type batch_session)
+   · l'ordre par clé (§1.3.1) élimine les courses entre consumers</div>
+
+<p>Le cas des événements <b>hors ordre</b> (une capture qui arrive avant son autorisation, un chargeback avant que la transaction n'existe) est absorbé par le même mécanisme : l'upsert <code>$setOnInsert</code> crée un <b>document squelette</b> portant l'identité et le mouvement reçu ; l'arrivée ultérieure du parent complète le squelette. À aucun moment le consumer n'attend, ne relit, ni ne bloque.</p>
+
+<div class="panel info">
+  <div class="panel-header">Traitement contractuel de la corrélation avec les producteurs</div>
+  <div class="panel-body"><p>La corrélation devient ainsi une <b>obligation du producteur</b>, pas un service de la plateforme : E-Stream fournit le Correlation ID reliant autorisation et capture ; les références d'estampillage relient transaction, remise et fichier ; K2 et NEPTING fournissent leurs identités de transaction. La plateforme <b>vérifie</b> (rejet en DLQ si clés absentes) et <b>assemble</b> (upserts), elle ne <b>devine</b> jamais. Toute règle de corrélation « dynamique » qui exigerait de retrouver le parent par heuristique est un défaut de contrat à remonter au producteur — pas un algorithme à implémenter dans le consumer.</p></div>
+</div>
+
+<h4 id="s1-3-4">1.3.4 Consolidation désynchronisée et détection proactive des orphelins</h4>
+
+<p>Malgré les contrats, le réel produira des <b>orphelins</b> : mouvements dont le parent n'arrive jamais (perte amont), clés présentes mais incohérentes, cas limites de reprise. Le principe : ces cas sont traités <b>hors du chemin chaud</b>, par des processus asynchrones, et rendus <b>visibles</b> plutôt que silencieusement accumulés.</p>
+
+<div class="ascii">   Chemin chaud (consumers Kafka)              Chemins asynchrones
+  ┌────────────────────────────────┐
+  │ upserts aveugles idempotents   │
+  │ → documents complets           │
+  │ → documents SQUELETTES         │──┐
+  │   (parent pas encore arrivé)   │  │
+  │ → DLQ (contrat violé :         │  │   ┌─────────────────────────────────┐
+  │   clés manquantes, schéma KO)  │──┼──▶│ CONSOLIDATEUR (job périodique)   │
+  └────────────────────────────────┘  │   │ · scan batché des squelettes     │
+                                      │   │   (index sur {status:"stub",     │
+                                      │   │    first_seen}) — jamais unitaire│
+                                      └──▶│ · tentatives de rattachement     │
+                                          │ · re-émission des DLQ corrigées  │
+                                          └───────────────┬─────────────────┘
+                                                          │ au-delà des seuils
+                                                          ▼
+                                          ┌─────────────────────────────────┐
+                                          │ DÉTECTION PROACTIVE              │
+                                          │ · métriques : nb orphelins,      │
+                                          │   âge du plus ancien, taux de    │
+                                          │   corrélation — PAR PRODUCTEUR   │
+                                          │ · seuils : ex. orphelin > 24 h,  │
+                                          │   taux < 99,9 % sur 1 h          │
+                                          │ · RAPPORT DE NON-CORRÉLATION     │
+                                          │   notifié au producteur          │
+                                          │   (event_ids, clés, périodes)    │
+                                          │ · suivi de remédiation           │
+                                          └─────────────────────────────────┘</div>
+
+<ul>
+  <li><b>Le consolidateur</b> travaille par balayages batchés indexés (jamais de lookup unitaire), à cadence régulière (ex. toutes les 10 minutes), et n'entre jamais en concurrence avec le chemin chaud sur les mêmes documents grâce aux upserts idempotents.</li>
+  <li><b>Les métriques d'orphelins sont des indicateurs de qualité producteur</b>, publiés par producteur et par type d'événement : elles objectivent le respect du contrat et déclenchent la boucle de remédiation (notification outillée, pas mail artisanal).</li>
+  <li><b>Rien ne disparaît</b> : un orphelin définitif reste requêtable (raw + collection de quarantaine), horodaté, imputable — exigence d'audit sur des données financières.</li>
+</ul>
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="s2">2. Le modèle organisé</h2>
+
+<h3 id="s2-1">2.1 Indépendance sémantique vis-à-vis des producteurs</h3>
+
+<p>Le modèle organisé est le <b>langage métier unique de l'acquisition</b>. Il décrit des concepts du domaine — la transaction et son cycle de vie, les mouvements (autorisation, capture, compensation), la remise, le chargeback, la fraude — et non des formats de flux. E-Stream, K2, NEPTING et demain Computop sont des <b>dialectes d'entrée</b> que la couche de mapping (§1.1) traduit vers ce pivot.</p>
+
+<p>Ce principe a trois conséquences concrètes :</p>
+<ul>
+  <li><b>Ajouter un producteur = écrire un mapping</b>, jamais modifier le modèle. Le raccordement de Computop est un projet d'intégration (contrat + mapping + tests), pas un projet de re-modélisation.</li>
+  <li><b>Test de convergence multi-sources</b> : une même transaction observée par K2 et par E-Stream doit produire, après mapping, <b>le même document organisé</b> — aux champs de lineage près. Ce test (golden tests croisés) est le critère objectif d'indépendance sémantique, exécuté en CI.</li>
+  <li><b>Lineage sans pollution</b> : la provenance (<code>source_system</code>, <code>source_message_ref</code>, <code>ingestion_schema_version</code>, offsets Kafka) vit dans une section technique <code>_lineage</code> de chaque document. Elle sert l'audit et le débogage ; aucun consommateur métier n'a besoin de la lire pour interpréter la donnée.</li>
+</ul>
+
+<div class="panel warning">
+  <div class="panel-header">Position d'architecte — sur la dérivation depuis le modèle de transfert E-Stream</div>
+  <div class="panel-body"><p>Le modèle actuel a été largement déduit du modèle de transfert E-Stream (lui-même partiellement inspiré d'ISO 20022). Un modèle de <b>transport</b> est optimisé pour échanger des messages, pas pour représenter un domaine ni servir des lectures : en le prenant comme point de départ, on hérite de contraintes de messagerie dans le cœur de données. Le choix de ne pas adopter intégralement un standard (ISO 20022 complet, BIAN) pour des raisons de coût est entendable et assumé ; en revanche, s'inspirer de leur <b>structure conceptuelle</b> (le vocabulaire, la séparation transaction / mouvements / règlement) ne coûte rien et évite de réinventer un domaine que l'industrie a déjà éprouvé. C'est exactement la cible v2 : un modèle conçu pour le métier et les patterns de lecture, <i>mappé</i> depuis E-Stream — et non déduit de lui.</p></div>
+</div>
+
+<h3 id="s2-2">2.2 État actuel — modèle v1 simplifié</h3>
+
+<table>
+  <thead><tr><th>Collection v1</th><th>Contenu</th><th>Limites identifiées</th></tr></thead>
+  <tbody>
+    <tr><td class="col-key">transaction</td><td>Document transaction « aplati », statuts de cycle de vie (accepté → autorisé → réglé), mouvements partiellement imbriqués.</td><td>Sémantique héritée des flux ; le modèle à statuts écrase l'historique ; extractions mono-mouvement (autorisations seules) inefficaces ; la distinction transaction/mouvement est ambiguë pour les consommateurs.</td></tr>
+    <tr><td class="col-key">remise</td><td>Remises (sessions de règlement).</td><td>Lien transaction ↔ remise inégalement exploité ; lien remise ↔ fichier non exploité.</td></tr>
+    <tr><td class="col-key">chargeback</td><td>Chargebacks.</td><td>Rattachement au cycle de vie transactionnel non systématique.</td></tr>
+  </tbody>
+</table>
+
+<p>La v2 accueille aujourd'hui principalement les données <b>K2</b> et <b>NEPTING</b>. L'exigence structurante : que la v2 serve, <b>avec le même schéma</b>, les données reçues de K2, NEPTING <b>et</b> E-Stream, de manière transparente — la convergence multi-sources du §2.1 n'est pas une option, c'est le critère d'acceptation de la v2.</p>
+
+<h3 id="s2-3">2.3 Modèle cible v2 — le métier de l'acquisition</h3>
+
+<p>La v2 décrit proprement le domaine, en tirant les leçons de la v1 :</p>
+
+<div class="ascii">  ┌───────────────────────────────────────────────┐      ┌──────────────────────────┐
+  │  TRANSACTION  (agrégat, collection)           │      │  REMISE  (collection)     │
+  │  _id = transaction_id (clé de corrélation)    │      │  _id = remittance_ref     │
+  │  identité : store_id, merchant, siren, rib    │      │  objet INDÉPENDANT :      │
+  │  montants consolidés, devise                  │      │  ses propres montants,    │
+  │  business_dates clés du cycle de vie          │      │  sessions batch (1..9),   │
+  │                                               │      │  lien fichier (file_ref)  │
+  │  movements[] — MOUVEMENTS TYPÉS, ordonnés :   │◀────▶│                           │
+  │   { type: AUTHORIZATION|CAPTURE|CLEARING|     │ lien │  postulat 1↔1 par tx,     │
+  │     CHARGEBACK|FRAUD_ALERT,                   │ par  │  cardinalité à réexaminer │
+  │     movement_id, correlation_id,              │ clés │  (variantes pressenties)  │
+  │     business_time, amounts, status,           │      └──────────────────────────┘
+  │     remittance_ref?, scheme, _lineage }       │
+  │                                               │      Chargeback & fraude =
+  │  _lineage : source_system(s), refs, offsets   │      mouvements du cycle de vie,
+  └───────────────────────────────────────────────┘      rattachés par correlation_id</div>
+
+<ul>
+  <li><b>La transaction est un agrégat de mouvements typés</b>, pas un état à statuts : l'historique est natif, les corrections rétroactives (chargeback tardif) sont des mouvements ajoutés, jamais des écrasements.</li>
+  <li><b>La remise est un objet indépendant</b>, lié par les références d'estampillage — jamais imbriquée. Ses caractéristiques propres (sessions batch, montants bruts débit/crédit, lien fichier) vivent chez elle ; l'enrichissement éventuel de champs remise au niveau transaction est une décision du modèle logique, pas du modèle conceptuel.</li>
+  <li><b>Les clés de corrélation sont de premier rang</b> : indexées, obligatoires, documentées champ par champ (quelle clé relie quoi, avec quelle cardinalité).</li>
+  <li><b>Le versioning du modèle</b> (et non des flux) est outillé : <code>schema_version</code> dans chaque document, changelog publié, visualisation du modèle et dictionnaire des champs (signification, valeurs admises) maintenus avec le schéma — pas dans des pages orphelines.</li>
+</ul>
+
+<h3 id="s2-4">2.4 Stratégie de migration v1 → v2 sans rupture de service</h3>
+
+<p>Deux stratégies sont viables ; le choix dépend de la nature du delta entre v1 et v2.</p>
+
+<h4>Option A — Évolution incrémentale in place (expand → migrate → contract)</h4>
+<p>Faire muter progressivement le schéma v1 jusqu'à devenir la v2, dans les mêmes collections. MongoDB s'y prête (documents versionnés par <code>schema_version</code>, lecteurs tolérants aux deux formes) :</p>
+<ol>
+  <li><b>Expand</b> — ajouter les structures cibles (mouvements typés, références de remise) à côté de l'existant ; les écritures alimentent les deux formes.</li>
+  <li><b>Migrate</b> — backfill des documents historiques vers la forme cible, par lots, en tâche de fond.</li>
+  <li><b>Contract</b> — retirer les champs et comportements v1 une fois tous les lecteurs migrés.</li>
+</ol>
+<p><b>Forces</b> : pas de double base, pas de bascule d'API, coût d'infrastructure nul. <b>Limites</b> : chaque étape intermédiaire doit rester lisible par l'API v1 → le code de lecture gère N formes simultanées ; quand le delta est <i>structurel</i> (externaliser la remise, retyper les mouvements, abandonner les statuts), la trajectoire devient longue, fragile, et le risque d'enlisement à mi-chemin est réel — l'état intermédiaire permanent est le pire des états.</p>
+
+<h4>Option B — v2 en parallèle, double alimentation, API v2, migration progressive des consommateurs</h4>
+
+<div class="ascii">        KAFKA (topics d'ingestion)                    RAW LAKE ICEBERG
+             │            │                                 │
+     consumer group   consumer group                        │  backfill historique
+     organized-v1     organized-v2  ◀───── re-projection ───┘  (batch Spark/Flink,
+             │            │                depuis le raw       mêmes mappings)
+             ▼            ▼
+     ┌──────────────┐  ┌──────────────┐
+     │  BASE v1     │  │  BASE v2     │   double alimentation au fil de l'eau
+     │  (inchangée) │  │  (cible)     │   (deux consumer groups indépendants)
+     └──────┬───────┘  └──────┬───────┘
+            │                 │
+        API v1            API v2          contrat de non-rupture : v1 figée,
+            │                 │           v2 documentée, matrice de compat publiée
+     consommateurs   ──────▶  migration progressive, consommateur par consommateur
+            │                 │
+            ▼                 ▼
+     RÉCONCILIATION CONTINUE v1 ↔ v2 : comptages par jour/type/source,
+     checksums d'agrégats (montants), échantillonnage de documents
+            │
+            ▼
+     critères de bascule atteints → gel v1 → décommissionnement</div>
+
+<ol>
+  <li><b>Créer la base v2</b> avec le modèle cible propre (§2.3) — sans compromis hérités.</li>
+  <li><b>Alimenter la v2 par re-projection depuis le raw</b> pour l'historique (backfill Iceberg → mappings v2 → MongoDB) et par un <b>consumer group dédié</b> pour le fil de l'eau. Point non négociable : <b>pas de migration ETL base v1 → base v2</b>, qui transporterait dans la v2 les défauts et pertes de la v1. La re-projection valide au passage la promesse de rejouabilité du socle — si elle échoue, c'est un signal architectural majeur à traiter.</li>
+  <li><b>Double alimentation v1 + v2</b> pendant toute la coexistence : deux consumer groups indépendants sur les mêmes topics, aucune dépendance entre eux.</li>
+  <li><b>Exposer l'API v2</b> ; l'API v1 est <b>figée</b> (corrections de sécurité uniquement) — le gel est ce qui rend la fin de vie crédible.</li>
+  <li><b>Migrer les consommateurs progressivement</b>, avec la réconciliation continue v1 ↔ v2 comme preuve de confiance (les chiffres sont identiques, documentés, opposables).</li>
+  <li><b>Décommissionner</b> sur critères explicites : 100 % du trafic sur v2 pendant N semaines, réconciliation verte, plan de retour arrière expiré.</li>
+</ol>
+
+<div class="panel success">
+  <div class="panel-header">Recommandation d'architecte</div>
+  <div class="panel-body"><p>Le delta v1 → v2 est <b>structurel</b> (mouvements typés, remise externalisée, abandon des statuts, convergence tri-source K2/NEPTING/E-Stream) : <b>l'Option B est recommandée</b>, avec alimentation de la v2 par re-projection depuis le raw. L'Option A reste l'outil de droit commun pour les évolutions <i>additives</i> ultérieures de la v2 (nouveaux champs, nouveaux types de mouvements) — c'est la combinaison des deux qui constitue la stratégie complète : <b>B pour changer de génération, A pour vivre à l'intérieur d'une génération</b>. Condition de réussite commune : le pipeline raw du §1.2 doit être en production <i>avant</i> d'engager la migration, puisqu'il en est le moteur.</p></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2 id="s3">3. Synthèse des principes d'architecture</h2>
+
+<table>
+  <thead><tr><th>#</th><th>Principe</th><th>Traduction opérationnelle</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td class="col-key">Contrat avant flux</td><td>Aucun producteur raccordé sans contrat Avro versionné, clés de corrélation obligatoires, CI de compatibilité, golden samples.</td></tr>
+    <tr><td>2</td><td class="col-key">Deux sémantiques, un mapping</td><td>Contrat = sémantique producteur ; modèle organisé = sémantique métier ; mapping versionné et testé entre les deux. Aucune fuite.</td></tr>
+    <tr><td>3</td><td class="col-key">Raw immuable et rejouable</td><td>Iceberg/Parquet, une table par type d'événement, partition <code>days(business_time)</code>, commits 2–5 min, maintenance planifiée.</td></tr>
+    <tr><td>4</td><td class="col-key">La clé Kafka est une décision d'architecture</td><td>Clé = identité de corrélation (haute cardinalité, ordre par agrégat) ; 64–128 partitions dès la création ; jamais de repartitionnement à chaud.</td></tr>
+    <tr><td>5</td><td class="col-key">Corrélation à l'ingestion, jamais au processing</td><td>Les événements portent leurs clés (contrat) ; upserts aveugles idempotents ; zéro lookup dans le chemin chaud.</td></tr>
+    <tr><td>6</td><td class="col-key">Les orphelins sont visibles et imputables</td><td>Consolidation asynchrone batchée ; métriques par producteur ; rapport de non-corrélation notifié ; rien ne disparaît.</td></tr>
+    <tr><td>7</td><td class="col-key">Le modèle organisé décrit le métier</td><td>Transaction = agrégat de mouvements typés ; remise = objet indépendant ; convergence K2/NEPTING/E-Stream prouvée par golden tests croisés.</td></tr>
+    <tr><td>8</td><td class="col-key">Changer de génération par re-projection</td><td>v2 alimentée depuis le raw (jamais par ETL v1→v2) ; double alimentation ; API v1 figée ; réconciliation continue ; décommissionnement sur critères.</td></tr>
+    <tr><td>9</td><td class="col-key">Le schéma est versionné, pas les flux</td><td><code>schema_version</code> dans chaque document, changelog publié, dictionnaire des champs et visualisation maintenus avec le modèle.</td></tr>
+  </tbody>
+</table>
+
+<p style="margin-top:30px; color:#42526E; font-size:12.5px; border-top:1px solid #DFE1E6; padding-top:12px;">
+Périmètre de la présente étude : ingestion et modèle organisé. Les volets <b>exposition</b> (APIs chaudes MongoDB, service KPI) et <b>extraction de rapports volumineux</b> (Starburst/Trino sur Iceberg + MongoDB fédérés, exports asynchrones) font l'objet d'études dédiées s'appuyant sur les fondations posées ici.</p>
+
+</div>
+</body>
+</html>
