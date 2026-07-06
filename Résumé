@@ -1,27 +1,58 @@
-Retrieval of WCR functionalities: aggregation calculations to support the “Email Reports” (Reporting) and “KPI” functions (VISION portal dashboards) — pooling and allocation of responsibilities.
+Voici le mail réécrit — je garde vos expressions et votre fond, en corrigeant la syntaxe et en structurant les paragraphes :
 
-1) Migration of WCR functionalities
+---
 
-The migration of WCR functionalities is part of the overall modernization of the Information System for Decision Support (SID) and will enable the use of transactional data originating from ESTREEM, made available through the data platform.
+**Objet : Couches Raw et Organisée — points d'attention conception et déploiement**
 
-Aggregation calculations for KPIs and production of email reports (EDD):
-There are 5 critical email reports (EDD) required for 2026.
-Approximately fifty EDDs exist overall (each EDD carries KPIs).
+Bonjour,
 
-50% of remaining analytics dashboard functionalities still to be migrated to the VISION portal.
+Dans la continuité de la mise en place des couches Raw et Organisée, quelques points d'attention.
 
-Integration of an Electronic Document Management (EDM/GED) tool to ensure the storage of email reports and their consultation via the VISION portal.
+Le cas particulier de Visa Filtering ne nécessite pas nécessairement une architecture Raw et Organisée : une approche avec un seul stockage et une exposition est suffisante. Les efforts de conception doivent se focaliser sur l'architecture interne cible.
 
-2) Rationalization of reference data and centralization within the data platform
+**Couche Raw**
 
-Centralized definition within the card payments data platform to guarantee a single source of truth for reference data (Merchants and Contracts) across all assets, and to enrich transactional data.
+Voici le mail réécrit — je garde vos expressions et votre fond, en corrigeant la syntaxe et en structurant les paragraphes :
 
-Study and implementation of reference data flow integration, including the data model within the Organized Layer, as well as data lifecycle management (update events, retention policies, etc.).
+---
 
-3) Implementation of onboarding process orchestration within the VISION portal
+**Objet : Couches Raw et Organisée — points d'attention conception et déploiement**
 
-Connected onboarding
+Bonjour,
 
-Online onboarding
+Dans la continuité de la mise en place des couches Raw et Organisée, quelques points d'attention.
 
-Requirement for a digital vault to securely store and manage contracts
+Le cas particulier de Visa Filtering ne nécessite pas nécessairement une architecture Raw et Organisée : une approche avec un seul stockage et une exposition est suffisante. Les efforts de conception doivent se focaliser sur l'architecture interne cible.
+
+**Couche Raw**
+
+Avant de valider une solution à base de stockage dans COS en fichiers par période contenant des « events per line », il faut confirmer une hypothèse : il semblerait que nous n'ayons pas de besoin de recherche par critère ni d'extraction dans cette zone. Si tel est bien le cas, un stockage brut « event par ligne » sera suffisant. Dans le cas contraire, cette approche sera inadaptée et nécessitera une solution plus industrialisée, avec de l'indexation, du partitionnement et une réelle capacité de recherche.
+
+**Organized Layer**
+
+Les ateliers en cours sont efficaces et permettent d'avancer vers un modèle MLD cible viable, conforme au MCD initial. Deux points doivent néanmoins être traités :
+
+1. Il faudrait planifier les adaptations du MCD suite à ces ateliers.
+
+2. L'OL V2 étant une évolution du système actuel, elle devrait inclure by design la capacité à absorber les données K2 et Nepting produites actuellement. Si nous ne faisons pas cet exercice, la continuité du service sera difficile à garantir lors de la mise en service de ce modèle, et cela provoquera une rupture dans le service rendu aux consommateurs.
+
+La démarche qui me paraît nécessaire à inclure dans les ateliers actuels :
+
+- **1.1 — S'assurer que le modèle MongoDB actuel peut être migré vers l'OL V2.**
+  Si des adaptations importantes de l'OL V2 s'avèrent nécessaires, cela signifie que le design n'est pas suffisamment générique et multi-producteurs. Si des mappings suffisent pour migrer et entrer dans l'OL V2, alors nous sommes bons.
+
+- **1.2 — En parallèle, étudier la compatibilité des flux K2 et Nepting à s'insérer dans l'OL V2**, moyennant quelques mappings et enrichissements éventuels. Si l'OL V2 nécessite des changements, ils doivent être prévus dès la conception — sinon, risque de rupture de service (deux produits distincts et non exposables avec un seul contrat).
+
+**Concrètement, lors du déploiement :**
+
+- V1 : OL V1 actuel → contrat d'exposition actuel (API V1)
+- V2 : OL V2 → contrat d'exposition V2
+- Migrer les données Mongo V1 vers l'OL V2 doit être possible.
+- Router les flux K2 et autres doit pouvoir se faire sans que l'OL V2 nécessite un upgrade, la compatibilité ayant été étudiée en phase de conception.
+- Les consommateurs peuvent à tout moment switcher vers la V2, qui leur fournit un contrat V2 et l'ensemble des données (pas uniquement E-Stream).
+
+Cordialement,
+
+---
+
+Deux remarques au passage : j'ai transformé « SI nous ne faisons pas l'exercice » en phrase complète pour la fluidité, et j'ai explicité « => OK » en « alors nous sommes bons » — dites-moi si vous préférez garder la forme télégraphique d'origine. Je peux aussi produire une version plus courte si ce mail s'adresse à un management moins technique.
