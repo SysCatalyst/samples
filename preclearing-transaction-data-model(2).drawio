@@ -1,0 +1,150 @@
+<mxfile host="app.diagrams.net" agent="claude">
+  <diagram id="preclearing" name="Pre-clearing Transaction - Data Model">
+    <mxGraphModel dx="1328" dy="893" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="e_PreclearingTransaction" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#666666;fontSize=12;" value="&amp;lt;&amp;lt;message&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;PreclearingTransaction&lt;/b&gt;" vertex="1">
+          <mxGeometry height="56" width="300" x="1200" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" parent="e_PreclearingTransaction" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="movementContext : &lt;font color=&#39;#555555&#39;&gt;MovementContext [1]&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="e_MovementContext" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#dae8fc;strokeColor=#666666;fontSize=12;" value="&amp;lt;&amp;lt;object&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;MovementContext&lt;/b&gt;" vertex="1">
+          <mxGeometry height="152" width="300" x="1200" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" parent="e_MovementContext" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="preclearingIdentification : &lt;font color=&#39;#555555&#39;&gt;PreclearingIdentification&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" parent="e_MovementContext" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="preclearingAmounts : &lt;font color=&#39;#555555&#39;&gt;PreclearingAmounts&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" parent="e_MovementContext" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="preclearingConditions : &lt;font color=&#39;#555555&#39;&gt;PreclearingConditions&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" parent="e_MovementContext" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="transactionIdentification : &lt;font color=&#39;#555555&#39;&gt;TransactionIdentification&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" parent="e_MovementContext" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="preclearingStatusAndResults : &lt;font color=&#39;#555555&#39;&gt;PreclearingStatusAndResults&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="128" as="geometry" />
+        </mxCell>
+        <mxCell id="e_PreclearingIdentification" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#666666;fontSize=12;" value="&amp;lt;&amp;lt;object&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;PreclearingIdentification&lt;/b&gt;" vertex="1">
+          <mxGeometry height="200" width="300" x="40" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" parent="e_PreclearingIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="fileId : &lt;font color=&#39;#555555&#39;&gt;string(30)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" parent="e_PreclearingIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="merchantAccountIban : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c19" parent="e_PreclearingIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="feeAccountIban : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" parent="e_PreclearingIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="X-Request-Id : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="c21" parent="e_PreclearingIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="X-Correlation-Id : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="128" as="geometry" />
+        </mxCell>
+        <mxCell id="cPI-gmBXXjgsZaFY2jRZ-2" parent="e_PreclearingIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="X-Event-Id : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="c22" parent="e_PreclearingIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="..." vertex="1">
+          <mxGeometry height="24" width="300" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="e_PreclearingAmounts" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#666666;fontSize=12;" value="&amp;lt;&amp;lt;object&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;PreclearingAmounts&lt;/b&gt;" vertex="1">
+          <mxGeometry height="200" width="300" x="400" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="c29" parent="e_PreclearingAmounts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="transactionGrossAmountToCredit : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c30" parent="e_PreclearingAmounts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="transactionGrossAmountToDebit : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c31" parent="e_PreclearingAmounts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="transactionBankCommissionAmountToDebit : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="c32" parent="e_PreclearingAmounts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="transactionBankCommissionAmountToCredit : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="c33" parent="e_PreclearingAmounts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="transactionOMCInterchangeToCredit : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="128" as="geometry" />
+        </mxCell>
+        <mxCell id="c34" parent="e_PreclearingAmounts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="transactionOMCInterchangeToDebit : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="c35" parent="e_PreclearingAmounts" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="..." vertex="1">
+          <mxGeometry height="24" width="300" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="e_PreclearingConditions" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#666666;fontSize=12;" value="&amp;lt;&amp;lt;object&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;PreclearingConditions&lt;/b&gt;" vertex="1">
+          <mxGeometry height="200" width="300" x="760" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="c47" parent="e_PreclearingConditions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="merchantAccountCurrency : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c48" parent="e_PreclearingConditions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="feeAccountCurrency : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c49" parent="e_PreclearingConditions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="grossAmountIndicator : &lt;font color=&#39;#555555&#39;&gt;boolean&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="c50" parent="e_PreclearingConditions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="feesDeferredDebitIndicator : &lt;font color=&#39;#555555&#39;&gt;boolean&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="c51" parent="e_PreclearingConditions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="feesCumulLevel : &lt;font color=&#39;#555555&#39;&gt;string (enum TBD)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="128" as="geometry" />
+        </mxCell>
+        <mxCell id="c52" parent="e_PreclearingConditions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="clearingNetwork : &lt;font color=&#39;#555555&#39;&gt;string (type TBD)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="152" as="geometry" />
+        </mxCell>
+        <mxCell id="c53" parent="e_PreclearingConditions" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="..." vertex="1">
+          <mxGeometry height="24" width="300" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="e_TransactionIdentification" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#666666;fontSize=12;" value="&amp;lt;&amp;lt;object&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;TransactionIdentification&lt;/b&gt;" vertex="1">
+          <mxGeometry height="56" width="300" x="1120" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="c68" parent="e_TransactionIdentification" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="X-Original-Correlation-Id : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="e_PreclearingStatusAndResults" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=32;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;html=1;fillColor=#d5e8d4;strokeColor=#666666;fontSize=12;" value="&amp;lt;&amp;lt;object&amp;gt;&amp;gt;&lt;br&gt;&lt;b&gt;PreclearingStatusAndResults&lt;/b&gt;" vertex="1">
+          <mxGeometry height="128" width="300" x="1480" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="c69" parent="e_PreclearingStatusAndResults" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="validatedTransactionsCounter : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="c70" parent="e_PreclearingStatusAndResults" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="suspendedTransactionsCounter : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="c71" parent="e_PreclearingStatusAndResults" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="discardedTransactionsCounter : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="c72" parent="e_PreclearingStatusAndResults" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=11;" value="preclearingRejectedTransactionsCounter : &lt;font color=&#39;#555555&#39;&gt;string&lt;/font&gt;" vertex="1">
+          <mxGeometry height="24" width="300" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="c82" edge="1" parent="1" source="e_PreclearingTransaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;endFill=0;startArrow=diamondThin;startFill=1;strokeColor=#1f5fa8;fontSize=10;labelBackgroundColor=#ffffff;" target="e_MovementContext" value="movementContext [1]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c83" edge="1" parent="1" source="e_MovementContext" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;endFill=0;startArrow=diamondThin;startFill=1;strokeColor=#1f5fa8;fontSize=10;labelBackgroundColor=#ffffff;" target="e_PreclearingIdentification" value="preclearingIdentification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c84" edge="1" parent="1" source="e_MovementContext" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;endFill=0;startArrow=diamondThin;startFill=1;strokeColor=#1f5fa8;fontSize=10;labelBackgroundColor=#ffffff;" target="e_PreclearingAmounts" value="preclearingAmounts">
+          <mxGeometry relative="1" x="0.1271" y="-6" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="550" y="236" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c85" edge="1" parent="1" source="e_MovementContext" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;endFill=0;startArrow=diamondThin;startFill=1;strokeColor=#1f5fa8;fontSize=10;labelBackgroundColor=#ffffff;" target="e_PreclearingConditions" value="preclearingConditions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c86" edge="1" parent="1" source="e_MovementContext" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;endFill=0;startArrow=diamondThin;startFill=1;strokeColor=#1f5fa8;fontSize=10;labelBackgroundColor=#ffffff;" target="e_TransactionIdentification" value="transactionIdentification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c87" edge="1" parent="1" source="e_MovementContext" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=open;endFill=0;startArrow=diamondThin;startFill=1;strokeColor=#1f5fa8;fontSize=10;labelBackgroundColor=#ffffff;" target="e_PreclearingStatusAndResults" value="preclearingStatusAndResults">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
